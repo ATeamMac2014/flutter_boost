@@ -49,6 +49,7 @@ class BoostFlutterRouterApi extends FlutterRouterApi {
 
   @override
   void removeRoute(CommonParams arg) {
-    appState.remove(arg.uniqueId);
+    // todo-wrs
+    // appState.remove(arg.uniqueId);
   }
 }

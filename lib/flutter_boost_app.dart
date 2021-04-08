@@ -91,9 +91,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     _activePointers.toList().forEach(WidgetsBinding.instance.cancelPointer);
   }
 
-  void refresh() {
-    refreshOverlayEntries(containers);
-  }
 
   String _createUniqueId(String pageName) {
     if (kReleaseMode) {
@@ -138,7 +135,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       if (topContainer?.pageInfo?.uniqueId != uniqueId) {
         containers.remove(existed);
         containers.add(existed);
-        refresh();
+        insertEntry(existed);
         PageVisibilityBinding.instance
             .dispatchPageShowEvent(_getCurrentPageRoute());
         if (_getPreviousPageRoute() != null) {
@@ -156,8 +153,10 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
           arguments: arguments,
           withContainer: withContainer);
       if (withContainer) {
-        containers.add(_createContainer(pageInfo));
-        refresh();
+        final container = _createContainer(pageInfo);
+        containers.add(container);
+        insertEntry(container);
+
         // The observer can't receive the 'pageshow' message indeed，
         // because the observer is not yet registed at the moment.
         //
@@ -169,9 +168,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
               .dispatchPageHideEvent(_getPreviousPageRoute());
         }
       } else {
-        topContainer.pages
-            .add(BoostPage.create(pageInfo, topContainer.routeFactory));
-        refresh();
+        final page = BoostPage.create(pageInfo, topContainer.routeFactory);
+        topContainer.push(page);
       }
     }
     Logger.log(
@@ -202,29 +200,33 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       container = topContainer;
     }
 
-    final bool handled = await container?.navigator?.maybePop();
-    if (handled != null && !handled) {
-      assert(container.pageInfo.withContainer);
-      final CommonParams params = CommonParams()
-        ..pageName = container.pageInfo.pageName
-        ..uniqueId = container.pageInfo.uniqueId
-        ..arguments = arguments;
-      _nativeRouterApi.popRoute(params);
+    if (container.pages.length > 1) {
+      container.pop();
+    } else {
+      final bool handled = await container?.navigator?.maybePop();
+      if (handled != null && !handled) {
+        _removeContainer(container);
+      }
     }
+
     _pendingResult.remove(uniqueId);
 
     Logger.log(
         'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
   }
 
-  void _removeContainer(BoostContainer page) {
-    containers.remove(page);
-    if (page.pageInfo.withContainer) {
-      Logger.log('_removeContainer ,  uniqueId=${page.pageInfo.uniqueId}');
+  void _removeContainer(BoostContainer container) {
+    containers.remove(container);
+    container.detach();
+
+    PageVisibilityBinding.instance.dispatchPageDestoryEvent(container.pages.first.route);
+
+    if (container.pageInfo.withContainer) {
+      Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.uniqueId}');
       final CommonParams params = CommonParams()
-        ..pageName = page.pageInfo.pageName
-        ..uniqueId = page.pageInfo.uniqueId
-        ..arguments = page.pageInfo.arguments;
+        ..pageName = container.pageInfo.pageName
+        ..uniqueId = container.pageInfo.uniqueId
+        ..arguments = container.pageInfo.arguments;
       _nativeRouterApi.popRoute(params);
     }
   }
@@ -306,7 +308,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       _route = container.pages.first.route;
       containers.removeWhere((BoostContainer entry) =>
           entry.pageInfo?.uniqueId == uniqueId);
-      refresh();
+      //refresh();
     } else {
       for (BoostContainer container in containers) {
         final BoostPage<dynamic> _target = container.pages.firstWhere(
@@ -316,7 +318,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         container.pages.removeWhere(
             (BoostPage<dynamic> entry) => entry.pageInfo?.uniqueId == uniqueId);
       }
-      refresh();
+      //refresh();
     }
     PageVisibilityBinding.instance.dispatchPageDestoryEvent(_route);
     Logger.log('remove,  uniqueId=$uniqueId, $containers');
