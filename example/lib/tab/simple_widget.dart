@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 import 'package:flutter_boost/page_visibility.dart';
-import '../main.dart';
 
 class SimpleWidget extends StatefulWidget {
   final Map params;
@@ -20,7 +19,8 @@ class _SimpleWidgetState extends State<SimpleWidget>
   static const String _kTag = 'page_visibility';
   @override
   void didChangeDependencies() {
-    PageVisibilityBinding.instance.addObserver(this, ModalRoute.of(context));
+    final Route<dynamic> route = ModalRoute.of(context) as Route<dynamic>;
+    PageVisibilityBinding.instance.addObserver(this, route);
     print('$_kTag#didChangeDependencies, ${widget.uniqueId}, $this');
     super.didChangeDependencies();
   }
@@ -49,11 +49,12 @@ class _SimpleWidgetState extends State<SimpleWidget>
   }
 
   @override
-  void onPageShow({bool isForegroundEvent}) {
+  void onPageShow({bool isForegroundEvent = true}) {
     print('$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
   }
 
-  void onPageHide({bool isBackgroundEvent}) {
+  @override
+  void onPageHide({bool isBackgroundEvent = true}) {
     print('$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
   }
 

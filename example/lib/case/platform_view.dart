@@ -7,11 +7,11 @@ typedef TextViewCreatedCallback = void Function(TextViewController controller);
 
 class TextView extends StatefulWidget {
   const TextView({
-    Key key,
+    Key? key,
     this.onTextViewCreated,
   }) : super(key: key);
 
-  final TextViewCreatedCallback onTextViewCreated;
+  final TextViewCreatedCallback? onTextViewCreated;
 
   @override
   State<StatefulWidget> createState() => _TextViewState();
@@ -31,10 +31,11 @@ class _TextViewState extends State<TextView> {
   }
 
   void _onPlatformViewCreated(int id) {
-    if (widget.onTextViewCreated == null) {
+    final onTextViewCreated = widget.onTextViewCreated;
+    if (onTextViewCreated == null) {
       return;
     }
-    widget.onTextViewCreated(TextViewController._(id));
+    onTextViewCreated(TextViewController._(id));
   }
 }
 

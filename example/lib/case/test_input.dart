@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {
-  TestPage({Key key, this.title = "Input Test"}) : super(key: key);
+  TestPage({Key? key, this.title = "Input Test"}) : super(key: key);
 
   final String title;
 
@@ -122,8 +122,8 @@ class TestTextField extends StatefulWidget {
 }
 
 class _TestTextFieldState extends State<TestTextField> {
-  FocusNode _node;
-  PersistentBottomSheetController _controller;
+  late FocusNode _node;
+  PersistentBottomSheetController? _controller;
 
   @override
   void initState() {
@@ -143,7 +143,7 @@ class _TestTextFieldState extends State<TestTextField> {
         if (_controller != null) {
           //Navigator.of(context).pop();
           print('closeBottomSheet');
-          _controller.close();
+          _controller?.close();
         }
         _controller = null;
       }

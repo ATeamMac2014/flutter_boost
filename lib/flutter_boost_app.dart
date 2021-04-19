@@ -12,12 +12,12 @@ import 'package:flutter_boost/page_visibility.dart';
 import 'package:flutter_boost/overlay_entry.dart';
 
 typedef FlutterBoostAppBuilder = Widget Function(Widget home);
-typedef FlutterBoostRouteFactory = Route<dynamic> Function(
+typedef FlutterBoostRouteFactory = Route<dynamic>? Function(
     RouteSettings settings, String uniqueId);
 
 class FlutterBoostApp extends StatefulWidget {
   const FlutterBoostApp(this.routeFactory,
-      {FlutterBoostAppBuilder appBuilder, String initialRoute})
+      {FlutterBoostAppBuilder? appBuilder, String? initialRoute})
       : appBuilder = appBuilder ?? _materialAppBuilder,
         initialRoute = initialRoute ?? '/';
 
@@ -43,17 +43,18 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   BoostContainer  get topContainer => containers.last;
 
   NativeRouterApi get nativeRouterApi => _nativeRouterApi;
-  NativeRouterApi _nativeRouterApi;
+  late NativeRouterApi _nativeRouterApi;
 
   BoostFlutterRouterApi get boostFlutterRouterApi => _boostFlutterRouterApi;
-  BoostFlutterRouterApi _boostFlutterRouterApi;
+  late BoostFlutterRouterApi _boostFlutterRouterApi;
 
   FlutterBoostRouteFactory get routeFactory => widget.routeFactory;
   final Set<int> _activePointers = <int>{};
 
   @override
   void initState() {
-    _containers.add(_createContainer(PageInfo(pageName: widget.initialRoute)));
+    final pageName = widget.initialRoute;
+    _containers.add(_createContainer(PageInfo(pageName: pageName, uniqueId: _createUniqueId(pageName))));
     _nativeRouterApi = NativeRouterApi();
     _boostFlutterRouterApi = BoostFlutterRouterApi(this);
     super.initState();
@@ -63,9 +64,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   Widget build(BuildContext context) {
     return widget.appBuilder(WillPopScope(
         onWillPop: () async {
-          final bool canPop = topContainer.navigator.canPop();
-          if (canPop) {
-            topContainer.navigator.pop();
+          final bool? canPop = topContainer.navigator?.canPop();
+          if (canPop != null && canPop) {
+            topContainer.navigator?.pop();
             return true;
           }
           return false;
@@ -88,9 +89,11 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   void _cancelActivePointers() {
-    _activePointers.toList().forEach(WidgetsBinding.instance.cancelPointer);
+    final instance = WidgetsBinding.instance;
+    if (instance != null) {
+      _activePointers.toList().forEach(instance.cancelPointer);
+    }
   }
-
 
   String _createUniqueId(String pageName) {
     if (kReleaseMode) {
@@ -101,7 +104,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   BoostContainer _createContainer(PageInfo pageInfo) {
-    pageInfo.uniqueId ??= _createUniqueId(pageInfo.pageName);
+    //pageInfo.uniqueId ??= _createUniqueId(pageInfo.pageName);
     return BoostContainer(
         key: ValueKey<String>(pageInfo.uniqueId),
         pageInfo: pageInfo,
@@ -109,10 +112,10 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   Future<T> pushWithResult<T extends Object>(String pageName,
-      {String uniqueId, Map<dynamic, dynamic> arguments, bool withContainer}) {
+      {Map<Object, Object>? arguments, bool withContainer = true}) {
     final Completer<T> completer = Completer<T>();
-    assert(uniqueId == null);
-    uniqueId = _createUniqueId(pageName);
+
+    String uniqueId = _createUniqueId(pageName);
     if (withContainer) {
       final CommonParams params = CommonParams()
         ..pageName = pageName
@@ -128,19 +131,20 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   void push(String pageName,
-      {String uniqueId, Map<dynamic, dynamic> arguments, bool withContainer}) {
+      {required String uniqueId, Map<dynamic, dynamic>? arguments, bool withContainer = true }) {
     _cancelActivePointers();
-    final BoostContainer existed = _findContainerByUniqueId(uniqueId);
+    final BoostContainer? existed = _findContainerByUniqueId(uniqueId);
     if (existed != null) {
-      if (topContainer?.pageInfo?.uniqueId != uniqueId) {
+      if (topContainer.pageInfo.uniqueId != uniqueId) {
         containers.remove(existed);
         containers.add(existed);
         insertEntry(existed);
         PageVisibilityBinding.instance
             .dispatchPageShowEvent(_getCurrentPageRoute());
-        if (_getPreviousPageRoute() != null) {
+        final prevousPageRoute = _getPreviousPageRoute();
+        if (prevousPageRoute != null) {
           PageVisibilityBinding.instance
-              .dispatchPageHideEvent(_getPreviousPageRoute());
+              .dispatchPageHideEvent(prevousPageRoute);
         }
       } else {
         PageVisibilityBinding.instance
@@ -149,7 +153,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     } else {
       final PageInfo pageInfo = PageInfo(
           pageName: pageName,
-          uniqueId: uniqueId ?? _createUniqueId(pageName),
+          uniqueId: uniqueId,
           arguments: arguments,
           withContainer: withContainer);
       if (withContainer) {
@@ -163,9 +167,10 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         // See PageVisibilityBinding#addObserver for the solution.
         PageVisibilityBinding.instance
             .dispatchPageShowEvent(_getCurrentPageRoute());
-        if (_getPreviousPageRoute() != null) {
+        final previousPageRoute = _getPreviousPageRoute();
+        if (previousPageRoute != null) {
           PageVisibilityBinding.instance
-              .dispatchPageHideEvent(_getPreviousPageRoute());
+              .dispatchPageHideEvent(previousPageRoute);
         }
       } else {
         final page = BoostPage.create(pageInfo, topContainer.routeFactory);
@@ -176,34 +181,35 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         'push page, uniqueId=$uniqueId, existed=$existed, withContainer=$withContainer, arguments:$arguments, $containers');
   }
 
-  void popWithResult<T extends Object>([T result]) {
-    final String uniqueId = topContainer?.topPage?.pageInfo?.uniqueId;
+  void popWithResult<T extends Object>(T? result) {
+    final String uniqueId = topContainer.topPage.pageInfo.uniqueId;
     if (_pendingResult.containsKey(uniqueId)) {
-      _pendingResult[uniqueId].complete(result);
+      _pendingResult[uniqueId]?.complete(result);
     }
-    pop();
+    pop(uniqueId: uniqueId);
   }
 
-  Future<void> pop({String uniqueId, Map<dynamic, dynamic> arguments}) async {
-    BoostContainer container;
+  Future<void> pop({String? uniqueId, Map<dynamic, dynamic>? arguments}) async {
+    late BoostContainer? container;
     if (uniqueId != null) {
       container = _findContainerByUniqueId(uniqueId);
       if (container == null) {
         Logger.error('uniqueId=$uniqueId not find');
         return;
       }
-      if (container != topContainer) {
-        _removeContainer(container);
-        return;
-      }
     } else {
       container = topContainer;
+    }
+
+    if (container != topContainer) {
+      _removeContainer(container);
+      return;
     }
 
     if (container.pages.length > 1) {
       container.pop();
     } else {
-      final bool handled = await container?.navigator?.maybePop();
+      final bool? handled = await container.navigator?.maybePop();
       if (handled != null && !handled) {
         _removeContainer(container);
       }
@@ -219,7 +225,10 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     containers.remove(container);
     container.detach();
 
-    PageVisibilityBinding.instance.dispatchPageDestoryEvent(container.pages.first.route);
+    final route = container.pages.first.route;
+    if (route != null) {
+      PageVisibilityBinding.instance.dispatchPageDestoryEvent(route);
+    }
 
     if (container.pageInfo.withContainer) {
       Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.uniqueId}');
@@ -251,48 +260,50 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         .dispatchPageShowEvent(_getCurrentPageRoute());
   }
 
-  Route<dynamic> _getCurrentPageRoute() {
-    return topContainer?.topPage?.route;
+  Route<dynamic>? _getCurrentPageRoute() {
+    return topContainer.topPage.route;
   }
   String _getCurrentPageUniqueId() {
-    return topContainer?.topPage?.pageInfo.uniqueId;
+    return topContainer.topPage.pageInfo.uniqueId;
   }
-  String  _getPreviousPageUniqueId() {
-    if (topContainer != null) {
-      assert(topContainer.pages != null);
-      final int pageCount = topContainer.pages.length;
-      if (pageCount > 1) {
-        return topContainer.pages[pageCount - 2].pageInfo.uniqueId;
-      } else {
-        final int containerCount = containers.length;
-        if (containerCount > 1) {
-          return containers[containerCount - 2].pages.last.pageInfo.uniqueId;
-        }
+  String?  _getPreviousPageUniqueId() {
+    assert(topContainer.pages != null);
+    final int pageCount = topContainer.pages.length;
+    if (pageCount > 1) {
+      return topContainer.pages[pageCount - 2].pageInfo.uniqueId;
+    } else {
+      final int containerCount = containers.length;
+      if (containerCount > 1) {
+        return containers[containerCount - 2].pages.last.pageInfo.uniqueId;
       }
     }
+
     return null;
   }
-  Route<dynamic> _getPreviousPageRoute() {
-    if (topContainer != null) {
-      assert(topContainer.pages != null);
-      final int pageCount = topContainer.pages.length;
-      if (pageCount > 1) {
-        return topContainer.pages[pageCount - 2].route;
-      } else {
-        final int containerCount = containers.length;
-        if (containerCount > 1) {
-          return containers[containerCount - 2].pages.last.route;
-        }
+  Route<dynamic>? _getPreviousPageRoute() {
+    final int pageCount = topContainer.pages.length;
+    if (pageCount > 1) {
+      return topContainer.pages[pageCount - 2].route;
+    } else {
+      final int containerCount = containers.length;
+      if (containerCount > 1) {
+        return containers[containerCount - 2].pages.last.route;
       }
     }
+
     return null;
   }
 
-  BoostContainer _findContainerByUniqueId(String uniqueId) {
-    return containers.singleWhere(
-        (BoostContainer element) =>
-            element.pageInfo.uniqueId == uniqueId,
-        orElse: () => null);
+  BoostContainer? _findContainerByUniqueId(String uniqueId) {
+    try {
+      return containers.singleWhere(
+              (BoostContainer element) =>
+          element.pageInfo.uniqueId == uniqueId);
+    } catch (e) {
+        Logger.logObject(e);
+    } finally {
+      return null;
+    }
   }
 
   void remove(String uniqueId) {
@@ -300,23 +311,22 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       return;
     }
 
-    final BoostContainer container =
+    final BoostContainer? container =
         _findContainerByUniqueId(uniqueId);
-    Route<dynamic> _route;
+    late Route<dynamic>? _route;
     if (container != null) {
       // Gets the first internal route of the current container
       _route = container.pages.first.route;
       containers.removeWhere((BoostContainer entry) =>
-          entry.pageInfo?.uniqueId == uniqueId);
+          entry.pageInfo.uniqueId == uniqueId);
       //refresh();
     } else {
       for (BoostContainer container in containers) {
         final BoostPage<dynamic> _target = container.pages.firstWhere(
-            (BoostPage<dynamic> entry) => entry.pageInfo?.uniqueId == uniqueId,
-            orElse: () => null);
-        _route = _target?.route;
+            (BoostPage<dynamic> entry) => entry.pageInfo.uniqueId == uniqueId);
+        _route = _target.route;
         container.pages.removeWhere(
-            (BoostPage<dynamic> entry) => entry.pageInfo?.uniqueId == uniqueId);
+            (BoostPage<dynamic> entry) => entry.pageInfo.uniqueId == uniqueId);
       }
       //refresh();
     }
@@ -325,7 +335,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   PageInfo getTopPageInfo() {
-    return topContainer?.topPage?.pageInfo;
+    return topContainer.topPage.pageInfo;
   }
 
   int pageSize() {
@@ -338,7 +348,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
 }
 
 class BoostPage<T> extends Page<T> {
-  BoostPage({LocalKey key, this.routeFactory, this.pageInfo})
+  BoostPage({LocalKey? key, required this.routeFactory, required this.pageInfo})
       : super(key: key, name: pageInfo.pageName, arguments: pageInfo.arguments);
 
   final FlutterBoostRouteFactory routeFactory;
@@ -351,7 +361,7 @@ class BoostPage<T> extends Page<T> {
   }
 
   final List<Route<T>> _route = <Route<T>>[];
-  Route<T> get route => _route.isEmpty ? null : _route.first;
+  Route<T>? get route => _route.isEmpty ? null : _route.first;
 
   @override
   String toString() =>
@@ -360,7 +370,7 @@ class BoostPage<T> extends Page<T> {
   @override
   Route<T> createRoute(BuildContext context) {
     _route.clear();
-    _route.add(routeFactory(this, pageInfo.uniqueId));
+    _route.add(routeFactory(this, pageInfo.uniqueId) as Route<T>);
     return _route.first;
   }
 }
@@ -369,17 +379,15 @@ class BoostNavigatorObserver extends NavigatorObserver {
   BoostNavigatorObserver();
 
   @override
-  void didPush(Route<dynamic> route, Route<dynamic> previousRoute) {
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     //handle internal route
-    if (previousRoute != null) {
-      PageVisibilityBinding.instance.dispatchPageShowEvent(route);
-      PageVisibilityBinding.instance.dispatchPageHideEvent(previousRoute);
-    }
+    PageVisibilityBinding.instance.dispatchPageShowEvent(route);
+    PageVisibilityBinding.instance.dispatchPageHideEvent(previousRoute);
     super.didPush(route, previousRoute);
   }
 
   @override
-  void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     if (previousRoute != null) {
       PageVisibilityBinding.instance.dispatchPageHideEvent(route);
       PageVisibilityBinding.instance.dispatchPageShowEvent(previousRoute);

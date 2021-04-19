@@ -1,15 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boost_example/case/platform_view.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 import 'package:flutter_boost/page_visibility.dart';
 import 'package:flutter_boost/logger.dart';
 
 class FlutterRouteWidget extends StatefulWidget {
-  FlutterRouteWidget({this.params, this.message, this.uniqueId});
+  const FlutterRouteWidget({required this.params, this.message, required this.uniqueId});
 
   final Map params;
-  final String message;
+  final String? message;
   final String uniqueId;
 
   @override
@@ -29,7 +28,7 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
   @override
   void didChangeDependencies() {
     Logger.log('$_kTag#didChangeDependencies, ${widget.uniqueId}, $this');
-    PageVisibilityBinding.instance.addObserver(this, ModalRoute.of(context));
+    PageVisibilityBinding.instance.addObserver(this, ModalRoute.of(context)!);
     super.didChangeDependencies();
   }
 
@@ -51,11 +50,12 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
   }
 
   @override
-  void onPageShow({bool isForegroundEvent}) {
+  void onPageShow({bool isForegroundEvent = true}) {
     Logger.log('$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
   }
 
-  void onPageHide({bool isBackgroundEvent}) {
+  @override
+  void onPageHide({bool isBackgroundEvent = true}) {
     Logger.log('$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
   }
 
@@ -70,7 +70,7 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
     Logger.log(
         '${MediaQuery.of(context).size.height} uniqueId=${widget.uniqueId}');
 
-    final String message = widget.message;
+    final String? message = widget.message;
     return Scaffold(
       appBar: AppBar(
         brightness:Brightness.dark,
@@ -104,7 +104,7 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
                           "This is a flutter activity.\nuniqueId:${widget.uniqueId}",
                       style: TextStyle(color: Colors.blue)),
                   TextSpan(
-                      text: "\nparams: ${widget?.params}",
+                      text: "\nparams: ${widget.params}",
                       style: TextStyle(fontStyle: FontStyle.italic)),
                 ])),
                 alignment: AlignmentDirectional.center,
@@ -211,7 +211,7 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
                   //   print('Get result: $result');
                   // }),
                   onTap: () => BoostNavigator.of()
-                      .push("returnData", withContainer: true)
+                      .push("returnData", withContainer: false)
                       .then((onValue) => print('Get result: $onValue'))),
             ],
           ),
@@ -227,7 +227,7 @@ class PushWidget extends StatefulWidget {
 }
 
 class _PushWidgetState extends State<PushWidget> {
-  VoidCallback _backPressedListenerUnsub;
+  VoidCallback? _backPressedListenerUnsub;
 
   @override
   void initState() {

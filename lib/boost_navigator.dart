@@ -14,10 +14,18 @@ class BoostNavigator {
 
   /// Retrieves the instance of [BoostNavigator]
   static BoostNavigator of() {
-    FlutterBoostAppState _appState;
-    _appState = overlayKey.currentContext
-        .findAncestorStateOfType<FlutterBoostAppState>();
-    return BoostNavigator(_appState);
+    BuildContext? context = overlayKey.currentContext;
+    if (context != null) {
+      FlutterBoostAppState? appState;
+      appState = context.findAncestorStateOfType<FlutterBoostAppState>();
+      if (appState != null) {
+        return BoostNavigator(appState);
+      } else {
+        throw Exception('appState is null');
+      }
+    } else {
+      throw Exception('overlayKey.currentContext is null');
+    }
   }
 
   /// Whether this page with the given [name] is a flutter page
@@ -25,26 +33,25 @@ class BoostNavigator {
   /// If the name of route can be found in route table then return true,
   /// otherwise return false.
   bool isFlutterPage(String name) {
-    return appState.routeFactory(RouteSettings(name: name), null) != null;
+    return appState.routeFactory(RouteSettings(name: name), "") != null;
   }
 
   /// Push the page with the given [name] onto the hybrid stack.
-  Future<T> push<T extends Object>(String name,
-      {Map<dynamic, dynamic> arguments, bool withContainer = false}) {
+  Future<T?> push<T extends Object>(String name,
+      {Map<Object, Object>? arguments, bool withContainer = false}) {
     if (isFlutterPage(name)) {
-      return appState.pushWithResult(name,
-          arguments: arguments, withContainer: withContainer);
+      return appState.pushWithResult(name, arguments: arguments, withContainer: withContainer);
     } else {
       final CommonParams params = CommonParams()
         ..pageName = name
         ..arguments = arguments;
       appState.nativeRouterApi.pushNativeRoute(params);
-      return Future<T>(()=>null);
+      return Future<T?>(()=>null);
     }
   }
 
   /// Pop the top-most page off the hybrid stack.
-  void pop<T extends Object>([T result]) {
+  void pop<T extends Object>([T? result]) {
     appState.popWithResult(result);
   }
 
@@ -64,8 +71,8 @@ class BoostNavigator {
   }
 
 
-  PageInfo getTopByContext(BuildContext context) {
-    return BoostContainer.of(context).pageInfo;
+  PageInfo? getTopByContext(BuildContext context) {
+    return BoostContainer.of(context)?.pageInfo;
   }
 
   /// Return the number of flutter pages
@@ -77,10 +84,10 @@ class BoostNavigator {
 }
 
 class PageInfo {
-  PageInfo({this.pageName, this.uniqueId, this.arguments, this.withContainer});
+  PageInfo({required this.pageName, required this.uniqueId, this.arguments, this.withContainer = true});
 
   bool withContainer;
   String pageName;
   String uniqueId;
-  Map<dynamic, dynamic> arguments;
+  Map<dynamic, dynamic>? arguments;
 }

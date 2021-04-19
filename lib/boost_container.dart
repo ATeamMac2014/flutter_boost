@@ -7,15 +7,15 @@ import 'package:flutter_boost/flutter_boost_app.dart';
 import 'overlay_entry.dart';
 
 class BoostContainer extends StatefulWidget {
-  BoostContainer({LocalKey key, this.routeFactory, this.pageInfo})
+  BoostContainer({LocalKey? key, required this.routeFactory, required this.pageInfo})
       : super(key: key) {
     pages.add(BoostPage.create(pageInfo, routeFactory));
   }
 
-  ContainerOverlayEntry _owner;
+  ContainerOverlayEntry? _owner;
 
-  static BoostContainer of(BuildContext context) {
-    final BoostContainer container =
+  static BoostContainer? of(BuildContext context) {
+    final BoostContainer? container =
     context.findAncestorWidgetOfExactType<BoostContainer>() ;
     return container;
   }
@@ -29,12 +29,12 @@ class BoostContainer extends StatefulWidget {
 
   int get size => pages.length;
 
-  NavigatorState get navigator => _navKey.currentState;
+  NavigatorState? get navigator => _navKey.currentState;
   final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
   void detach() {
     if (_owner != null) {
-      _owner.remove();
+      _owner?.remove();
     }
 
     _owner = null;
@@ -50,12 +50,12 @@ class BoostContainer extends StatefulWidget {
 
   void push(BoostPage<dynamic> page) {
     _pages.add(page);
-    final router = page.createRoute(_navKey.currentContext);
-    navigator.push(router);
+    final router = page.createRoute(_navKey.currentContext!);
+    navigator?.push(router);
   }
 
   void pop() {
-    navigator.pop();
+    navigator?.pop();
   }
 }
 

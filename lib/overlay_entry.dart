@@ -2,10 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_boost/boost_container.dart';
 
 final GlobalKey<OverlayState> overlayKey = GlobalKey<OverlayState>();
-List<ContainerOverlayEntry> _lastEntries;
+List<ContainerOverlayEntry>? _lastEntries;
 
 void insertEntry(BoostContainer container) {
-  final OverlayState overlayState = overlayKey.currentState;
+  final OverlayState? overlayState = overlayKey.currentState;
   if (overlayState == null) {
     return;
   }
@@ -15,23 +15,25 @@ void insertEntry(BoostContainer container) {
 }
 
 void refreshOverlayEntries(List<BoostContainer> containers) {
-  final OverlayState overlayState = overlayKey.currentState;
+  final OverlayState? overlayState = overlayKey.currentState;
   if (overlayState == null) {
     return;
   }
 
-  if (_lastEntries != null && _lastEntries.isNotEmpty) {
-    for (ContainerOverlayEntry entry in _lastEntries) {
+  final lastEntries = _lastEntries;
+  if (lastEntries != null && lastEntries.isNotEmpty) {
+    for (ContainerOverlayEntry entry in lastEntries) {
       entry.remove();
     }
   }
 
-  _lastEntries = containers
+  final newEntries = containers
       .map<ContainerOverlayEntry>(
           (BoostContainer container) => ContainerOverlayEntry(container))
       .toList(growable: false);
+  _lastEntries = newEntries;
 
-  overlayState.insertAll(_lastEntries);
+  overlayState.insertAll(newEntries);
 }
 
 class ContainerOverlayEntry extends OverlayEntry {

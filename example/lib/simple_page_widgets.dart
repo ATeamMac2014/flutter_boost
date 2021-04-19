@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boost_example/case/platform_view.dart';
 import 'package:flutter_boost/boost_navigator.dart';
-import 'package:flutter_boost/logger.dart';
 
 class FirstRouteWidget extends StatefulWidget {
   @override

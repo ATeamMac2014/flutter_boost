@@ -4,22 +4,30 @@ import 'package:flutter_boost/messages.dart';
 /// The MessageChannel counterpart on the Dart side.
 class BoostFlutterRouterApi extends FlutterRouterApi {
   factory BoostFlutterRouterApi(FlutterBoostAppState appState) {
-    if (_instance == null) {
-      _instance = BoostFlutterRouterApi._(appState);
-      FlutterRouterApi.setup(_instance);
+    BoostFlutterRouterApi? instance = _instance;
+    if (instance == null) {
+      instance = BoostFlutterRouterApi._(appState);
+      _instance = instance;
+      FlutterRouterApi.setup(instance);
     }
-    return _instance;
+    return instance;
   }
 
   BoostFlutterRouterApi._(this.appState);
 
   final FlutterBoostAppState appState;
-  static BoostFlutterRouterApi _instance;
+  static BoostFlutterRouterApi? _instance = null;
 
   @override
   void pushRoute(CommonParams arg) {
-    appState.push(arg.pageName,
-        uniqueId: arg.uniqueId, arguments: arg.arguments, withContainer: true);
+    final pageName = arg.pageName;
+    final uniqueId = arg.uniqueId;
+    if (pageName != null && uniqueId != null) {
+      appState.push(pageName,
+          uniqueId: uniqueId, arguments: arg.arguments, withContainer: true);
+    }
+
+
   }
 
   @override

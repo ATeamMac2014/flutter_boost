@@ -11,7 +11,7 @@ import 'package:flutter_boost/logger.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 
 class ImagePickerPage extends StatefulWidget {
-  ImagePickerPage({Key key, this.title, this.uniqueId}) : super(key: key);
+  ImagePickerPage({Key? key, required this.title, required this.uniqueId}) : super(key: key);
 
   final String title;
   final String uniqueId;
@@ -20,12 +20,12 @@ class ImagePickerPage extends StatefulWidget {
 }
 
 class _ImagePickerPageState extends State<ImagePickerPage> {
-  PickedFile _imageFile;
+  PickedFile? _imageFile;
   dynamic _pickImageError;
   bool isVideo = false;
-  VideoPlayerController _controller;
-  VideoPlayerController _toBeDisposed;
-  String _retrieveDataError;
+  VideoPlayerController? _controller;
+  VideoPlayerController? _toBeDisposed;
+  String? _retrieveDataError;
 
   final ImagePicker _picker = ImagePicker();
   final TextEditingController maxWidthController = TextEditingController();
@@ -33,7 +33,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
   final TextEditingController qualityController = TextEditingController();
 
   Future<void> _playVideo(PickedFile file) async {
-    if (file != null && mounted) {
+    if (mounted) {
       await _disposeVideoController();
       if (kIsWeb) {
         _controller = VideoPlayerController.network(file.path);
@@ -42,26 +42,29 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
         // Mute the video so it auto-plays in web!
         // This is not needed if the call to .play is the result of user
         // interaction (clicking on a "play" button, for example).
-        await _controller.setVolume(0.0);
+        await _controller?.setVolume(0.0);
       } else {
         _controller = VideoPlayerController.file(File(file.path));
-        await _controller.setVolume(1.0);
+        await _controller?.setVolume(1.0);
       }
-      await _controller.initialize();
-      await _controller.setLooping(true);
-      await _controller.play();
+      await _controller?.initialize();
+      await _controller?.setLooping(true);
+      await _controller?.play();
       setState(() {});
     }
   }
 
-  void _onImageButtonPressed(ImageSource source, {BuildContext context}) async {
+  void _onImageButtonPressed(ImageSource source, BuildContext context) async {
     if (_controller != null) {
-      await _controller.setVolume(0.0);
+      await _controller?.setVolume(0.0);
     }
     if (isVideo) {
-      final PickedFile file = await _picker.getVideo(
+      final PickedFile? file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
-      await _playVideo(file);
+      if (file != null) {
+        await _playVideo(file);
+      }
+
     } else {
       await _displayPickImageDialog(context,
           (double maxWidth, double maxHeight, int quality) async {
@@ -87,8 +90,8 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
   @override
   void deactivate() {
     if (_controller != null) {
-      _controller.setVolume(0.0);
-      _controller.pause();
+      _controller?.setVolume(0.0);
+      _controller?.pause();
     }
     super.deactivate();
   }
@@ -104,7 +107,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
 
   Future<void> _disposeVideoController() async {
     if (_toBeDisposed != null) {
-      await _toBeDisposed.dispose();
+      await _toBeDisposed?.dispose();
     }
     _toBeDisposed = _controller;
     _controller = null;
@@ -123,7 +126,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
     }
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: AspectRatioVideo(_controller),
+      child: AspectRatioVideo(_controller!),
     );
   }
 
@@ -132,14 +135,16 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
     if (retrieveError != null) {
       return retrieveError;
     }
-    if (_imageFile != null) {
+
+    PickedFile? imageFile = _imageFile;
+    if (imageFile != null) {
       if (kIsWeb) {
         // Why network?
         // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-        return Image.network(_imageFile.path);
+        return Image.network(imageFile.path);
       } else {
         return Semantics(
-            child: Image.file(File(_imageFile.path)),
+            child: Image.file(File(imageFile.path)),
             label: 'image_picker_example_picked_image');
       }
     } else if (_pickImageError != null) {
@@ -160,10 +165,12 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
     if (response.isEmpty) {
       return;
     }
-    if (response.file != null) {
+
+    final PickedFile? file = response.file;
+    if (file != null) {
       if (response.type == RetrieveType.video) {
         isVideo = true;
-        await _playVideo(response.file);
+        await _playVideo(file);
       } else {
         isVideo = false;
         setState(() {
@@ -171,7 +178,9 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
         });
       }
     } else {
-      _retrieveDataError = response.exception.code;
+      if (response.exception != null) {
+        _retrieveDataError = response.exception!.code;
+      }
     }
   }
 
@@ -244,7 +253,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                _onImageButtonPressed(ImageSource.gallery, context: context);
+                _onImageButtonPressed(ImageSource.gallery, context);
               },
               heroTag: 'image0',
               tooltip: 'Pick Image from gallery',
@@ -256,7 +265,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                _onImageButtonPressed(ImageSource.camera, context: context);
+                _onImageButtonPressed(ImageSource.camera, context);
               },
               heroTag: 'image1',
               tooltip: 'Take a Photo',
@@ -269,7 +278,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
-                _onImageButtonPressed(ImageSource.gallery);
+                _onImageButtonPressed(ImageSource.gallery, context);
               },
               heroTag: 'video0',
               tooltip: 'Pick Video from gallery',
@@ -282,7 +291,7 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
-                _onImageButtonPressed(ImageSource.camera);
+                _onImageButtonPressed(ImageSource.camera, context);
               },
               heroTag: 'video1',
               tooltip: 'Take a Video',
@@ -296,11 +305,11 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
 
   Text _getRetrieveErrorWidget() {
     if (_retrieveDataError != null) {
-      final Text result = Text(_retrieveDataError);
+      final Text result = Text(_retrieveDataError!);
       _retrieveDataError = null;
       return result;
     }
-    return null;
+    return const Text('');
   }
 
   Future<void> _displayPickImageDialog(
@@ -345,13 +354,13 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
                   onPressed: () {
                     double width = maxWidthController.text.isNotEmpty
                         ? double.parse(maxWidthController.text)
-                        : null;
+                        : 0;
                     double height = maxHeightController.text.isNotEmpty
                         ? double.parse(maxHeightController.text)
-                        : null;
+                        : 0;
                     int quality = qualityController.text.isNotEmpty
                         ? int.parse(qualityController.text)
-                        : null;
+                        : 0;
                     onPick(width, height, quality);
                     Navigator.of(context).pop();
                   }),
@@ -381,10 +390,12 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     if (!mounted) {
       return;
     }
-    if (initialized != controller.value.initialized) {
-      initialized = controller.value.initialized;
-      setState(() {});
-    }
+    // if (initialized != controller.value.initialized) {
+    //   initialized = controller.value.initialized;
+    //   setState(() {});
+    // }
+
+    setState(() {});
   }
 
   @override
@@ -403,8 +414,9 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   Widget build(BuildContext context) {
     if (initialized) {
       return Center(
+
         child: AspectRatio(
-          aspectRatio: controller.value?.aspectRatio,
+          aspectRatio: controller.value.aspectRatio,
           child: VideoPlayer(controller),
         ),
       );
