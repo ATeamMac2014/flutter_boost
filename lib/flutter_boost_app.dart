@@ -12,8 +12,10 @@ import 'package:flutter_boost/page_visibility.dart';
 import 'package:flutter_boost/overlay_entry.dart';
 
 typedef FlutterBoostAppBuilder = Widget Function(Widget home);
-typedef FlutterBoostRouteFactory = Route<dynamic>? Function(
+typedef FlutterBoostRouteFactory = Route<dynamic> Function(
     RouteSettings settings, String uniqueId);
+
+typedef PageBuilder = Widget Function(BuildContext context, RouteSettings settings);
 
 class FlutterBoostApp extends StatefulWidget {
   const FlutterBoostApp(this.routeFactory,

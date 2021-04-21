@@ -19,148 +19,106 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  static Map<String, FlutterBoostRouteFactory> routerMap = {
-    '/': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (_, __, ___) => Container());
+  static Map<String, PageBuilder> routerMap = {
+    '/': (context, settings) {
+      return Container();
     },
-    'embedded': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => EmbeddedFirstRouteWidget());
+    'embedded': (context, settings) {
+      return  EmbeddedFirstRouteWidget();
     },
-    'presentFlutterPage': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => FlutterRouteWidget(
+    'presentFlutterPage': (context, settings) {
+      return  FlutterRouteWidget(
                 params: settings.arguments as Map<dynamic, dynamic> ,
-                uniqueId: uniqueId,
-              ));
+                uniqueId: "",
+              );
     },
-    'imagepick': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) =>
-              ImagePickerPage(title: "xxx", uniqueId: uniqueId));
+    'imagepick': (context, settings) {
+      return  ImagePickerPage(title: "xxx", uniqueId: "");
     },
-    'firstFirst': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => FirstFirstRouteWidget());
+    'firstFirst': (context, settings) {
+      return FirstFirstRouteWidget();
     },
-    'willPop': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (context, __, ___) => WillPopRoute(context, title: 'popRoute'));
+    'willPop': (context, settings) {
+      return WillPopRoute(context, title: 'popRoute');
     },
-    'returnData': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (_, __, ___) => ReturnDataWidget()
-        ,transitionsBuilder: (BuildContext context, Animation<double> animation,
-          Animation<double> secondaryAnimation, Widget child) {
-        return SlideTransition(
-          position: new Tween<Offset>(
-            begin: const Offset(1.0, 0.0),
-            end: Offset.zero,
-          ).animate(animation),
-          child: new SlideTransition(
-            position: new Tween<Offset>(
-              begin: Offset.zero,
-              end: const Offset(1.0, 0.0),
-            ).animate(secondaryAnimation),
-            child: child,
-          ),
-        );
-      },);
+    'returnData': (context, settings) {
+      return  ReturnDataWidget();
     },
-    'secondStateful': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => SecondStatefulRouteWidget());
+    'secondStateful': (context, settings) {
+      return SecondStatefulRouteWidget();
     },
-    'platformView': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => PlatformRouteWidget());
+    'platformView': (context, settings) {
+      return PlatformRouteWidget();
     },
 
     ///可以在native层通过 getContainerParams 来传递参数
-    'flutterPage': (settings, uniqueId) {
-      print('flutterPage settings:$settings, uniqueId:$uniqueId');
-      return PageRouteBuilder<dynamic>(
-        settings: settings,
-        pageBuilder: (_, __, ___) => FlutterRouteWidget(
+    'flutterPage': (context, settings) {
+      return FlutterRouteWidget(
           params: settings.arguments as Map<dynamic, dynamic>,
-          uniqueId: uniqueId,
-        ),
-        // transitionsBuilder: (BuildContext context, Animation<double> animation,
-        //     Animation<double> secondaryAnimation, Widget child) {
-        //   return SlideTransition(
-        //     position: Tween<Offset>(
-        //       begin: const Offset(1.0, 0),
-        //       end: Offset.zero,
-        //     ).animate(animation),
-        //     child: SlideTransition(
-        //       position: Tween<Offset>(
-        //         begin: Offset.zero,
-        //         end: const Offset(-1.0, 0),
-        //       ).animate(secondaryAnimation),
-        //       child: child,
-        //     ),
-        //   );
-        // },
-      );
+          uniqueId: "");
     },
-    'tab_friend': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => SimpleWidget(
-              uniqueId, settings.arguments as Map<dynamic, dynamic>, "This is a flutter fragment"));
+    'tab_friend': (context, settings) {
+      return  SimpleWidget(
+              "", settings.arguments as Map<dynamic, dynamic>, "This is a flutter fragment");
     },
-    'tab_message': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => SimpleWidget(
-              uniqueId, settings.arguments as Map<dynamic, dynamic>, "This is a flutter fragment"));
+    'tab_message': (context, settings) {
+      return SimpleWidget(
+              "", settings.arguments as Map<dynamic, dynamic>, "This is a flutter fragment");
     },
-    'tab_flutter1': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => SimpleWidget(
-              uniqueId, settings.arguments as Map<dynamic, dynamic>, "This is a custom FlutterView"));
+    'tab_flutter1': (context, settings) {
+      return SimpleWidget(
+              "", settings.arguments as Map<dynamic, dynamic>, "This is a custom FlutterView");
     },
-    'tab_flutter2': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => SimpleWidget(
-              uniqueId, settings.arguments as Map<dynamic, dynamic>, "This is a custom FlutterView"));
+    'tab_flutter2': (context, settings) {
+      return SimpleWidget(
+              "", settings.arguments as Map<dynamic, dynamic>, "This is a custom FlutterView");
     },
 
-    'f2f_first': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (_, __, ___) => F2FFirstPage());
+    'f2f_first': (context, settings) {
+      return F2FFirstPage();
     },
-    'f2f_second': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings, pageBuilder: (_, __, ___) => F2FSecondPage());
+    'f2f_second': (context, settings) {
+      return F2FSecondPage();
     },
-    'mediaquery': (settings, uniqueId) {
-      return PageRouteBuilder<dynamic>(
-          settings: settings,
-          pageBuilder: (_, __, ___) => MediaQueryRouteWidget(
+    'mediaquery': (context, settings) {
+      return MediaQueryRouteWidget(
                 params: settings.arguments as Map<dynamic, dynamic>,
                 message: '',
-                uniqueId: uniqueId,
-              ));
+                uniqueId: "",
+              );
     },
   };
 
-  Route<dynamic>? routeFactory(RouteSettings settings, String uniqueId) {
-    final FlutterBoostRouteFactory? func = routerMap[settings.name];
-    if (func != null) {
-      return func(settings, uniqueId);
-    }
-
-    return null;
+  Route<dynamic> routeFactory(RouteSettings settings, String uniqueId) {
+    return PageRouteBuilder<dynamic>(
+      settings: settings,
+      pageBuilder: (context, __, ___) {
+        final PageBuilder? func = routerMap[settings.name];
+        if (func != null) {
+          return func(context, settings);
+        } else {
+          // 404
+          return Container();
+        }
+      }
+      // ,
+      // transitionsBuilder: (BuildContext context, Animation<double> animation,
+      //     Animation<double> secondaryAnimation, Widget child) {
+      //   return SlideTransition(
+      //     position: Tween<Offset>(
+      //       begin: const Offset(1.0, 0),
+      //       end: Offset.zero,
+      //     ).animate(animation),
+      //     child: SlideTransition(
+      //       position: Tween<Offset>(
+      //         begin: Offset.zero,
+      //         end: const Offset(-1.0, 0),
+      //       ).animate(secondaryAnimation),
+      //       child: child,
+      //     ),
+      //   );
+      // },
+    );
   }
 
   @override
