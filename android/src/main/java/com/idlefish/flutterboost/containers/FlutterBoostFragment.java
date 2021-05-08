@@ -196,7 +196,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
             return this;
         }
 
-        public FlutterBoostFragment.CachedEngineFragmentBuilder urlParams(HashMap<String, String> param) {
+        public FlutterBoostFragment.CachedEngineFragmentBuilder urlParams(HashMap<String, String> params) {
             this.params = params;
             return this;
         }
