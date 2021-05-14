@@ -238,9 +238,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
   }
 
-  void _removeContainer(BoostContainer container) {
+  void _removeContainer(BoostContainer container) async {
     containers.remove(container);
-    container.detach();
 
     final route = container.pages.first.route;
     if (route != null) {
@@ -253,8 +252,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         ..pageName = container.pageInfo.pageName
         ..uniqueId = container.pageInfo.uniqueId
         ..arguments = container.pageInfo.arguments;
-      _nativeRouterApi.popRoute(params);
+      await _nativeRouterApi.popRoute(params);
     }
+    container.detach();
   }
 
   void onForeground() {
