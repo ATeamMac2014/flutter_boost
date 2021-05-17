@@ -87,9 +87,12 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
 
   List<OverlayEntry> _initialEntries() {
     final List<OverlayEntry> entries = <OverlayEntry>[];
-    for (BoostContainer container in containers) {
-      final ContainerOverlayEntry entry = ContainerOverlayEntry(container);
-      entries.add(entry);
+    final OverlayState? overlayState = overlayKey.currentState;
+    if (overlayState == null) {
+      for (BoostContainer container in containers) {
+        final ContainerOverlayEntry entry = ContainerOverlayEntry(container);
+        entries.add(entry);
+      }
     }
     return entries;
   }
