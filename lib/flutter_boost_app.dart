@@ -15,7 +15,8 @@ typedef FlutterBoostAppBuilder = Widget Function(Widget home);
 typedef FlutterBoostRouteFactory = Route<dynamic> Function(
     RouteSettings settings, String uniqueId);
 
-typedef PageBuilder = Widget Function(BuildContext context, RouteSettings settings);
+typedef PageBuilder = Widget Function(
+    BuildContext context, RouteSettings settings);
 
 class FlutterBoostApp extends StatefulWidget {
   const FlutterBoostApp(this.routeFactory,
@@ -42,7 +43,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   List<BoostContainer> get containers => _containers;
   final List<BoostContainer> _containers = <BoostContainer>[];
 
-  BoostContainer  get topContainer => containers.last;
+  BoostContainer get topContainer => containers.last;
 
   NativeRouterApi get nativeRouterApi => _nativeRouterApi;
   late NativeRouterApi _nativeRouterApi;
@@ -56,7 +57,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   @override
   void initState() {
     final pageName = widget.initialRoute;
-    _containers.add(_createContainer(PageInfo(pageName: pageName, uniqueId: _createUniqueId(pageName))));
+    _containers.add(_createContainer(
+        PageInfo(pageName: pageName, uniqueId: _createUniqueId(pageName))));
     _nativeRouterApi = NativeRouterApi();
     _boostFlutterRouterApi = BoostFlutterRouterApi(this);
     super.initState();
@@ -73,15 +75,28 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
           }
           return false;
         },
-        child:  Listener(
+        child: Listener(
             onPointerDown: _handlePointerDown,
             onPointerUp: _handlePointerUpOrCancel,
             onPointerCancel: _handlePointerUpOrCancel,
-            child:Overlay(
-          key: overlayKey,
-          initialEntries: const <OverlayEntry>[],
-        ))));
+            child: Overlay(
+              key: overlayKey,
+              initialEntries: _initialEntries(),
+            ))));
   }
+
+  List<OverlayEntry> _initialEntries() {
+    final List<OverlayEntry> entries = <OverlayEntry>[];
+    final OverlayState? overlayState = overlayKey.currentState;
+    if (overlayState == null) {
+      for (BoostContainer container in containers) {
+        final ContainerOverlayEntry entry = ContainerOverlayEntry(container);
+        entries.add(entry);
+      }
+    }
+    return entries;
+  }
+
   void _handlePointerDown(PointerDownEvent event) {
     _activePointers.add(event.pointer);
   }
@@ -133,12 +148,15 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   void push(String pageName,
-      {required String uniqueId, Map<dynamic, dynamic>? arguments, bool withContainer = true }) {
+      {required String uniqueId,
+      Map<dynamic, dynamic>? arguments,
+      bool withContainer = true}) {
     _cancelActivePointers();
     final BoostContainer? existed = _findContainerByUniqueId(uniqueId);
     if (existed != null) {
       if (topContainer.pageInfo.uniqueId != uniqueId) {
         containers.remove(existed);
+        existed.detach();
         containers.add(existed);
         insertEntry(existed);
         PageVisibilityBinding.instance
@@ -223,9 +241,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
   }
 
-  void _removeContainer(BoostContainer container) {
+  void _removeContainer(BoostContainer container) async {
     containers.remove(container);
-    container.detach();
 
     final route = container.pages.first.route;
     if (route != null) {
@@ -238,8 +255,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         ..pageName = container.pageInfo.pageName
         ..uniqueId = container.pageInfo.uniqueId
         ..arguments = container.pageInfo.arguments;
-      _nativeRouterApi.popRoute(params);
+      await _nativeRouterApi.popRoute(params);
     }
+    container.detach();
   }
 
   void onForeground() {
@@ -265,10 +283,12 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   Route<dynamic>? _getCurrentPageRoute() {
     return topContainer.topPage.route;
   }
+
   String _getCurrentPageUniqueId() {
     return topContainer.topPage.pageInfo.uniqueId;
   }
-  String?  _getPreviousPageUniqueId() {
+
+  String? _getPreviousPageUniqueId() {
     assert(topContainer.pages != null);
     final int pageCount = topContainer.pages.length;
     if (pageCount > 1) {
@@ -282,6 +302,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
 
     return null;
   }
+
   Route<dynamic>? _getPreviousPageRoute() {
     final int pageCount = topContainer.pages.length;
     if (pageCount > 1) {
@@ -299,13 +320,11 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   BoostContainer? _findContainerByUniqueId(String uniqueId) {
     try {
       return containers.singleWhere(
-              (BoostContainer element) =>
-          element.pageInfo.uniqueId == uniqueId);
+          (BoostContainer element) => element.pageInfo.uniqueId == uniqueId);
     } catch (e) {
-        Logger.logObject(e);
-    } finally {
-      return null;
+      Logger.logObject(e);
     }
+    return null;
   }
 
   void remove(String uniqueId) {
@@ -313,14 +332,13 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       return;
     }
 
-    final BoostContainer? container =
-        _findContainerByUniqueId(uniqueId);
+    final BoostContainer? container = _findContainerByUniqueId(uniqueId);
     late Route<dynamic>? _route;
     if (container != null) {
       // Gets the first internal route of the current container
       _route = container.pages.first.route;
-      containers.removeWhere((BoostContainer entry) =>
-          entry.pageInfo.uniqueId == uniqueId);
+      containers.removeWhere(
+          (BoostContainer entry) => entry.pageInfo.uniqueId == uniqueId);
       //refresh();
     } else {
       for (BoostContainer container in containers) {
