@@ -26,8 +26,6 @@ class BoostFlutterRouterApi extends FlutterRouterApi {
       appState.push(pageName,
           uniqueId: uniqueId, arguments: arg.arguments, withContainer: true);
     }
-
-
   }
 
   @override
@@ -57,7 +55,8 @@ class BoostFlutterRouterApi extends FlutterRouterApi {
 
   @override
   void removeRoute(CommonParams arg) {
-    // todo-wrs
-    // appState.remove(arg.uniqueId);
+    if (arg.uniqueId != null) {
+      appState.remove(arg.uniqueId!);
+    }
   }
 }
