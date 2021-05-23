@@ -3,8 +3,8 @@ import 'package:flutter_boost/logger.dart';
 
 abstract class PageVisibilityObserver {
   void onPageCreate();
-  void onPageShow({bool isForegroundEvent = true});
-  void onPageHide({bool isBackgroundEvent = true});
+  void onPageShow({bool isForegroundEvent = false});
+  void onPageHide({bool isBackgroundEvent = false});
   void onPageDestory();
 }
 
