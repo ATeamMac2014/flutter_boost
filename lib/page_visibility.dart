@@ -36,6 +36,8 @@ class PageVisibilityBinding {
       final Set<PageVisibilityObserver>? observers = _listeners[route];
       observers?.remove(observer);
     }
+
+    _listeners.removeWhere((key, value) => value.isEmpty);
     Logger.log('page_visibility, #removeObserver, $observer');
   }
 
