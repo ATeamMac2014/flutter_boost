@@ -38,15 +38,16 @@ class BoostNavigator {
 
   /// Push the page with the given [name] onto the hybrid stack.
   Future<T?> push<T extends Object>(String name,
-      {Map<Object, Object>? arguments, bool withContainer = false}) {
+      {Map<Object, Object>? arguments, bool withContainer = true}) {
     if (isFlutterPage(name)) {
-      return appState.pushWithResult(name, arguments: arguments, withContainer: withContainer);
+      return appState.pushWithResult(name,
+          arguments: arguments, withContainer: withContainer);
     } else {
       final CommonParams params = CommonParams()
         ..pageName = name
         ..arguments = arguments;
       appState.nativeRouterApi.pushNativeRoute(params);
-      return Future<T?>(()=>null);
+      return Future<T?>(() => null);
     }
   }
 
@@ -59,7 +60,7 @@ class BoostNavigator {
   ///
   /// This API is for backwards compatibility.
   void remove(String uniqueId) {
-    appState.pop(uniqueId:uniqueId);
+    appState.pop(uniqueId: uniqueId);
   }
 
   /// Retrieves the infomation of the top-most flutter page
@@ -69,7 +70,6 @@ class BoostNavigator {
   PageInfo getTopPageInfo() {
     return appState.getTopPageInfo();
   }
-
 
   PageInfo? getTopByContext(BuildContext context) {
     return BoostContainer.of(context)?.pageInfo;
@@ -84,7 +84,11 @@ class BoostNavigator {
 }
 
 class PageInfo {
-  PageInfo({required this.pageName, required this.uniqueId, this.arguments, this.withContainer = true});
+  PageInfo(
+      {required this.pageName,
+      required this.uniqueId,
+      this.arguments,
+      this.withContainer = true});
 
   bool withContainer;
   String pageName;
