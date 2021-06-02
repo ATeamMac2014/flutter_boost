@@ -26,6 +26,7 @@ import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.
 public class FlutterBoostFragment extends FlutterFragment implements FlutterViewContainer {
     private FlutterView flutterView;
     private FlutterViewContainerObserver observer;
+    boolean mCurrentHidden = false;
 
     private void findFlutterView(View view) {
         if (view instanceof ViewGroup) {
@@ -73,7 +74,13 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
             observer.onAppear(InitiatorLocation.SwitchTabs);
             ActivityAndFragmentPatch.onResumeAttachToFlutterEngine(flutterView, this.getFlutterEngine(), this);
         }
+
         super.onHiddenChanged(hidden);
+        mCurrentHidden = hidden;
+    }
+
+    boolean ismCurrentHidden() {
+        return mCurrentHidden;
     }
 
     @Override
@@ -94,7 +101,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
             findFlutterView(this.getView().getRootView());
         }
         super.onResume();
-        if (!isHidden()) {
+        if (!ismCurrentHidden()) {
             observer.onAppear(InitiatorLocation.Others);
             ActivityAndFragmentPatch.onResumeAttachToFlutterEngine(flutterView, this.getFlutterEngine(), this);
             this.getFlutterEngine().getLifecycleChannel().appIsResumed();
@@ -109,7 +116,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     @Override
     public void onPause() {
         super.onPause();
-        if (!isHidden()) {
+        if (!ismCurrentHidden()) {
             ActivityAndFragmentPatch.onPauseDetachFromFlutterEngine(flutterView, this.getFlutterEngine());
             if (this.getFlutterEngine() != null) {
                 this.getFlutterEngine().getLifecycleChannel().appIsResumed();
@@ -124,7 +131,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
             this.getFlutterEngine().getLifecycleChannel().appIsResumed();
         }
 
-        if (!isHidden()) {
+        if (!ismCurrentHidden()) {
             observer.onDisappear(InitiatorLocation.Others);
         }
     }
