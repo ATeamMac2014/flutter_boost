@@ -10,6 +10,7 @@
 #import "UIViewControllerDemo.h"
 #import "NativeViewController.h"
 #import "MyFlutterBoostDelegate.h"
+#import "CustomViewController.h"
 
 #import <flutter_boost/FlutterBoost.h>
 
@@ -47,8 +48,8 @@
     tabVC.viewControllers = @[vc,fvc];
 
     
-    UINavigationController *rvc = [[UINavigationController alloc] initWithRootViewController:tabVC];
-    
+    UINavigationController *rvc = [[CustomViewController alloc] initWithRootViewController:tabVC];
+    [rvc setNavigationBarHidden:true];
     delegate.navigationController=rvc;
 
 

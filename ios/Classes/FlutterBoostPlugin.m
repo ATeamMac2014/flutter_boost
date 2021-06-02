@@ -88,6 +88,12 @@
     };
 }
 
+- (void)enablePanGesture:(FBPanGestureParams *)input error:(FlutterError * _Nullable __autoreleasing *)error {
+    if([self.containerManager containUniqueId:input.uniqueId]){
+        [self.delegate enablePanGesture:input.uniqueId enable:input.enable.boolValue];
+    };
+}
+
 @end
 
 

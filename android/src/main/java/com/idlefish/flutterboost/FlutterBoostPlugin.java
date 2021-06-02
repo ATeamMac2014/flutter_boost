@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import Messages;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 
 public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterApi {
@@ -69,6 +70,11 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
         } else {
             throw new RuntimeException("Oops!! The unique id is null!");
         }
+    }
+
+    @Override
+    public void enablePanGesture(Messages.PanGestureParams arg) {
+
     }
 
     public interface Reply<T> {
