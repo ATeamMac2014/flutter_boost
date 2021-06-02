@@ -242,8 +242,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   void _removeContainer(BoostContainer container) async {
-    containers.remove(container);
-
     final route = container.pages.first.route;
     if (route != null) {
       PageVisibilityBinding.instance.dispatchPageDestoryEvent(route);
@@ -256,8 +254,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         ..uniqueId = container.pageInfo.uniqueId
         ..arguments = container.pageInfo.arguments;
       await _nativeRouterApi.popRoute(params);
+    } else {
+      containers.remove(container);
     }
-    container.detach();
   }
 
   void onForeground() {
@@ -341,6 +340,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       _route = container.pages.first.route;
       containers.removeWhere(
           (BoostContainer entry) => entry.pageInfo.uniqueId == uniqueId);
+      container.detach();
       //refresh();
     } else {
       for (BoostContainer container in containers) {
