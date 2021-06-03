@@ -24,16 +24,16 @@ class _MyAppState extends State<MyApp> {
       return Container();
     },
     'embedded': (context, settings) {
-      return  EmbeddedFirstRouteWidget();
+      return EmbeddedFirstRouteWidget();
     },
     'presentFlutterPage': (context, settings) {
-      return  FlutterRouteWidget(
-                params: settings.arguments as Map<dynamic, dynamic> ,
-                uniqueId: "",
-              );
+      return FlutterRouteWidget(
+        params: settings.arguments as Map<dynamic, dynamic>,
+        uniqueId: "",
+      );
     },
     'imagepick': (context, settings) {
-      return  ImagePickerPage(title: "xxx", uniqueId: "");
+      return ImagePickerPage(title: "xxx", uniqueId: "");
     },
     'firstFirst': (context, settings) {
       return FirstFirstRouteWidget();
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       return WillPopRoute(context, title: 'popRoute');
     },
     'returnData': (context, settings) {
-      return  ReturnDataWidget();
+      return ReturnDataWidget();
     },
     'secondStateful': (context, settings) {
       return SecondStatefulRouteWidget();
@@ -54,24 +54,23 @@ class _MyAppState extends State<MyApp> {
     ///可以在native层通过 getContainerParams 来传递参数
     'flutterPage': (context, settings) {
       return FlutterRouteWidget(
-          params: settings.arguments as Map<dynamic, dynamic>,
-          uniqueId: "");
+          params: settings.arguments as Map<dynamic, dynamic>, uniqueId: "");
     },
     'tab_friend': (context, settings) {
-      return  SimpleWidget(
-              "", settings.arguments as Map<dynamic, dynamic>, "This is a flutter fragment");
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a flutter fragment");
     },
     'tab_message': (context, settings) {
-      return SimpleWidget(
-              "", settings.arguments as Map<dynamic, dynamic>, "This is a flutter fragment");
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a flutter fragment");
     },
     'tab_flutter1': (context, settings) {
-      return SimpleWidget(
-              "", settings.arguments as Map<dynamic, dynamic>, "This is a custom FlutterView");
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a custom FlutterView");
     },
     'tab_flutter2': (context, settings) {
-      return SimpleWidget(
-              "", settings.arguments as Map<dynamic, dynamic>, "This is a custom FlutterView");
+      return SimpleWidget("", settings.arguments as Map<dynamic, dynamic>,
+          "This is a custom FlutterView");
     },
 
     'f2f_first': (context, settings) {
@@ -82,43 +81,54 @@ class _MyAppState extends State<MyApp> {
     },
     'mediaquery': (context, settings) {
       return MediaQueryRouteWidget(
-                params: settings.arguments as Map<dynamic, dynamic>,
-                message: '',
-                uniqueId: "",
-              );
+        params: settings.arguments as Map<dynamic, dynamic>,
+        message: '',
+        uniqueId: "",
+      );
     },
   };
 
   Route<dynamic> routeFactory(RouteSettings settings, String uniqueId) {
-    return PageRouteBuilder<dynamic>(
-      settings: settings,
-      pageBuilder: (context, __, ___) {
-        final PageBuilder? func = routerMap[settings.name];
-        if (func != null) {
-          return func(context, settings);
-        } else {
-          // 404
-          return Container();
-        }
-      }
-      // ,
-      // transitionsBuilder: (BuildContext context, Animation<double> animation,
-      //     Animation<double> secondaryAnimation, Widget child) {
-      //   return SlideTransition(
-      //     position: Tween<Offset>(
-      //       begin: const Offset(1.0, 0),
-      //       end: Offset.zero,
-      //     ).animate(animation),
-      //     child: SlideTransition(
-      //       position: Tween<Offset>(
-      //         begin: Offset.zero,
-      //         end: const Offset(-1.0, 0),
-      //       ).animate(secondaryAnimation),
-      //       child: child,
-      //     ),
-      //   );
-      // },
-    );
+    return MaterialPageRoute(
+        settings: settings,
+        builder: (context) {
+          final PageBuilder? func = routerMap[settings.name];
+          if (func != null) {
+            return func(context, settings);
+          } else {
+            // 404
+            return Container();
+          }
+        });
+    // return PageRouteBuilder<dynamic>(
+    //     settings: settings,
+    //     pageBuilder: (context, __, ___) {
+    //       final PageBuilder? func = routerMap[settings.name];
+    //       if (func != null) {
+    //         return func(context, settings);
+    //       } else {
+    //         // 404
+    //         return Container();
+    //       }
+    //     }
+    // ,
+    // transitionsBuilder: (BuildContext context, Animation<double> animation,
+    //     Animation<double> secondaryAnimation, Widget child) {
+    //   return SlideTransition(
+    //     position: Tween<Offset>(
+    //       begin: const Offset(1.0, 0),
+    //       end: Offset.zero,
+    //     ).animate(animation),
+    //     child: SlideTransition(
+    //       position: Tween<Offset>(
+    //         begin: Offset.zero,
+    //         end: const Offset(-1.0, 0),
+    //       ).animate(secondaryAnimation),
+    //       child: child,
+    //     ),
+    //   );
+    // },
+    // );
   }
 
   @override
@@ -158,7 +168,8 @@ class BoostNavigatorObserver extends NavigatorObserver {
   }
 
   @override
-  void didStartUserGesture(Route<dynamic> route, Route<dynamic>? previousRoute) {
+  void didStartUserGesture(
+      Route<dynamic> route, Route<dynamic>? previousRoute) {
     print('boost-didStartUserGesture' + route.settings.name!);
   }
 }

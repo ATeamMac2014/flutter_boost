@@ -51,6 +51,10 @@ class BoostNavigator {
     }
   }
 
+  void enablePanGesture(String uniqueId, bool enable) {
+    return appState.enablePanGesture(uniqueId, enable);
+  }
+
   /// Pop the top-most page off the hybrid stack.
   void pop<T extends Object>([T? result]) {
     appState.popWithResult(result);

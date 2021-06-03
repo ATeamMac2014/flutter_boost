@@ -62,6 +62,7 @@
         
     self.plugin= [FlutterBoostPlugin getPlugin:self.engine];
     self.plugin.delegate=delegate;
+        printf("wqtest flutter boost");
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)

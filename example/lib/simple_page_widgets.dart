@@ -175,6 +175,7 @@ class _FirstFirstRouteWidgetState extends State<FirstFirstRouteWidget> {
           child: Text('Open first route'),
           onPressed: () {
             print("open first page again!");
+            BoostNavigator.of().push("firstFirst", withContainer: false);
             // FlutterBoost.singleton.open("first").then((Map value){
             //   print("did receive first route result");
             //   print("did receive first route result $value");

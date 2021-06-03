@@ -5,7 +5,8 @@ import 'package:flutter_boost/page_visibility.dart';
 import 'package:flutter_boost/logger.dart';
 
 class FlutterRouteWidget extends StatefulWidget {
-  const FlutterRouteWidget({required this.params, this.message, required this.uniqueId});
+  const FlutterRouteWidget(
+      {required this.params, this.message, required this.uniqueId});
 
   final Map params;
   final String? message;
@@ -15,7 +16,8 @@ class FlutterRouteWidget extends StatefulWidget {
   _FlutterRouteWidgetState createState() => _FlutterRouteWidgetState();
 }
 
-class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibilityObserver {
+class _FlutterRouteWidgetState extends State<FlutterRouteWidget>
+    with PageVisibilityObserver {
   final TextEditingController _usernameController = TextEditingController();
   static const String _kTag = 'page_visibility';
 
@@ -51,12 +53,14 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
 
   @override
   void onPageShow({bool isForegroundEvent = true}) {
-    Logger.log('$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
+    Logger.log(
+        '$_kTag#onPageShow, ${widget.uniqueId}, isForegroundEvent=$isForegroundEvent, $this');
   }
 
   @override
   void onPageHide({bool isBackgroundEvent = true}) {
-    Logger.log('$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
+    Logger.log(
+        '$_kTag#onPageHide, ${widget.uniqueId}, isBackgroundEvent=$isBackgroundEvent, $this');
   }
 
   @override
@@ -73,9 +77,9 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
     final String? message = widget.message;
     return Scaffold(
       appBar: AppBar(
-        brightness:Brightness.dark,
+        brightness: Brightness.dark,
         backgroundColor: Colors.black,
-        textTheme:new TextTheme(title: TextStyle(color: Colors.black)) ,
+        textTheme: new TextTheme(title: TextStyle(color: Colors.black)),
         leading: Builder(builder: (BuildContext context) {
           return IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -143,10 +147,11 @@ class _FlutterRouteWidgetState extends State<FlutterRouteWidget> with PageVisibi
                     margin: const EdgeInsets.all(8.0),
                     color: Colors.yellow,
                     child: Text(
-                      'open native page',
+                      'open firstFirst pagesswq',
                       style: TextStyle(fontSize: 22.0, color: Colors.black),
                     )),
-                onTap: () => BoostNavigator.of().push("native"),
+                onTap: () => BoostNavigator.of()
+                    .push("firstFirst", withContainer: false),
               ),
               InkWell(
                 child: Container(

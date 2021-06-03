@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_boost/boost_container.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
@@ -241,6 +242,13 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
   }
 
+  void enablePanGesture(String uniqueId, bool enable) {
+    final PanGestureParams params = PanGestureParams()
+      ..uniqueId = uniqueId
+      ..enable = enable;
+    nativeRouterApi.enablePanGesture(params);
+  }
+
   void _removeContainer(BoostContainer container) async {
     final route = container.pages.first.route;
     if (route != null) {
@@ -398,7 +406,10 @@ class BoostPage<T> extends Page<T> {
 }
 
 class BoostNavigatorObserver extends NavigatorObserver {
-  BoostNavigatorObserver();
+  List<BoostPage<dynamic>> _pageList;
+  String _uniqueId;
+
+  BoostNavigatorObserver(this._pageList, this._uniqueId);
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
@@ -406,6 +417,7 @@ class BoostNavigatorObserver extends NavigatorObserver {
     PageVisibilityBinding.instance.dispatchPageShowEvent(route);
     PageVisibilityBinding.instance.dispatchPageHideEvent(previousRoute);
     super.didPush(route, previousRoute);
+    _disablePanGesture();
   }
 
   @override
@@ -415,5 +427,26 @@ class BoostNavigatorObserver extends NavigatorObserver {
       PageVisibilityBinding.instance.dispatchPageShowEvent(previousRoute);
     }
     super.didPop(route, previousRoute);
+    _enablePanGesture();
+  }
+
+  bool canDisable = true;
+
+  void _disablePanGesture() {
+    if (Platform.isIOS) {
+      if (_pageList.length > 1 && canDisable) {
+        BoostNavigator.of().enablePanGesture(_uniqueId, false);
+        canDisable = false;
+      }
+    }
+  }
+
+  void _enablePanGesture() {
+    if (Platform.isIOS) {
+      if (_pageList.length == 1) {
+        BoostNavigator.of().enablePanGesture(_uniqueId, true);
+        canDisable = true;
+      }
+    }
   }
 }

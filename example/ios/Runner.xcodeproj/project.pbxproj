@@ -17,6 +17,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		D02BA82C2660C9CB005B517F /* CustomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D02BA82B2660C9CB005B517F /* CustomViewController.m */; };
 		DF544AA62177253600931378 /* UIViewControllerDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = DF544AA42177253600931378 /* UIViewControllerDemo.m */; };
 		DF544AA72177253600931378 /* UIViewControllerDemo.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF544AA52177253600931378 /* UIViewControllerDemo.xib */; };
 		DF544AD4217838EF00931378 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DF544AD3217838EF00931378 /* libc++.tbd */; };
@@ -73,6 +74,8 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1222E2FC45BEDD8C125BB85 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		A61BB8DA66765B0A27F90733 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D02BA82A2660C9CB005B517F /* CustomViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomViewController.h; sourceTree = "<group>"; };
+		D02BA82B2660C9CB005B517F /* CustomViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomViewController.m; sourceTree = "<group>"; };
 		DF544AA32177253600931378 /* UIViewControllerDemo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIViewControllerDemo.h; sourceTree = "<group>"; };
 		DF544AA42177253600931378 /* UIViewControllerDemo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIViewControllerDemo.m; sourceTree = "<group>"; };
 		DF544AA52177253600931378 /* UIViewControllerDemo.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIViewControllerDemo.xib; sourceTree = "<group>"; };
@@ -165,6 +168,8 @@
 				FA32AEF523B4A56D00449D68 /* NativeViewController.m */,
 				8E9D8ACE25B982B30080BBA7 /* MyFlutterBoostDelegate.h */,
 				8E9D8ACF25B982C50080BBA7 /* MyFlutterBoostDelegate.m */,
+				D02BA82A2660C9CB005B517F /* CustomViewController.h */,
+				D02BA82B2660C9CB005B517F /* CustomViewController.m */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -199,7 +204,6 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
-				3FC74F80EA9D039C70D1F681 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -222,7 +226,8 @@
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 5GU52NSL5G;
+						DevelopmentTeam = ULJ6WDWEY3;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -292,24 +297,6 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
 		};
-		3FC74F80EA9D039C70D1F681 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
-				"${PODS_ROOT}/../Flutter/Flutter.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flutter.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -351,6 +338,7 @@
 			files = (
 				8E9D8AD025B982C60080BBA7 /* MyFlutterBoostDelegate.m in Sources */,
 				978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */,
+				D02BA82C2660C9CB005B517F /* CustomViewController.m in Sources */,
 				97C146F31CF9000F007C117D /* main.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				DF544AA62177253600931378 /* UIViewControllerDemo.m in Sources */,
@@ -493,8 +481,9 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 5GU52NSL5G;
+				DEVELOPMENT_TEAM = ULJ6WDWEY3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -507,8 +496,9 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = fleamarket.taobao3.com.flutterBoostExample4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.baidu.superduer.iostest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = superduer_iostest_dev;
 				REEXPORTED_LIBRARY_PATHS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 				"WARNING_CFLAGS[arch=*]" = "-Wno-incomplete-umbrella";
@@ -520,8 +510,9 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 5GU52NSL5G;
+				DEVELOPMENT_TEAM = ULJ6WDWEY3;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -534,8 +525,9 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = fleamarket.taobao3.com.flutterBoostExample4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.baidu.superduer.iostest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = superduer_iostest_dev;
 				REEXPORTED_LIBRARY_PATHS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};

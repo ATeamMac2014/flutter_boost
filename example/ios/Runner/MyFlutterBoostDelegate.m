@@ -34,6 +34,7 @@
     FBFlutterViewContainer *vc = FBFlutterViewContainer.new ;
     
     [vc setName:pageName params:arguments];
+
     
     BOOL animated = [arguments[@"animated"] boolValue];
     BOOL present= [arguments[@"present"] boolValue];
@@ -57,6 +58,14 @@
     }
     
 }
+
+- (void)enablePanGesture:(NSString *)uniqueId enable:(BOOL)enable {
+    NSLog(@"enable %d", enable);
+    printf("wqtest enablePanGesture ");
+    [self.navigationController.interactivePopGestureRecognizer setEnabled:enable];
+//    self.navigationController?.interactivePopGestureRecognizer?.isEnabled = self.interactiveEnable
+}
+
 
 @end
 
