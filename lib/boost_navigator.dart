@@ -60,6 +60,10 @@ class BoostNavigator {
     appState.popWithResult(result);
   }
 
+  void popUtil<T extends Object>(String uniqueId, [T? result]) {
+    appState.popUtilWithResult(uniqueId, result);
+  }
+
   /// Remove the page with the given [uniqueId] from hybrid stack.
   ///
   /// This API is for backwards compatibility.

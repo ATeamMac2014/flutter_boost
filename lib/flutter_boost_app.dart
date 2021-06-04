@@ -210,6 +210,38 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     pop(uniqueId: uniqueId);
   }
 
+  void popUtilWithResult<T extends Object>(String uniqueId, T? result) {
+    if (_pendingResult.containsKey(uniqueId)) {
+      _pendingResult[uniqueId]?.complete(result);
+    }
+    popUtil(uniqueId);
+  }
+
+  Future<void> popUtil(String uniqueId,
+      {Map<dynamic, dynamic>? arguments}) async {
+    final BoostContainer? container = _findContainerByUniqueId(uniqueId);
+    if (container == null) {
+      Logger.error('uniqueId=$uniqueId not find');
+      return;
+    }
+    final BoostPage? page = _findPageByUniqueId(uniqueId, container);
+    if (page == null) {
+      Logger.error('uniqueId=$uniqueId page not find');
+      return;
+    }
+    if (container != topContainer) {
+      final CommonParams params = CommonParams()
+        ..pageName = container.pageInfo.pageName
+        ..uniqueId = container.pageInfo.uniqueId
+        ..arguments = container.pageInfo.arguments;
+      await _nativeRouterApi.popUtilRouter(params);
+    }
+    container.popUtil(page.pageInfo.pageName);
+
+    Logger.log(
+        'pop container, uniqueId=$uniqueId, arguments:$arguments, $container');
+  }
+
   Future<void> pop({String? uniqueId, Map<dynamic, dynamic>? arguments}) async {
     late BoostContainer? container;
     if (uniqueId != null) {
@@ -330,6 +362,16 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
           (element.pageInfo.uniqueId == uniqueId) ||
           element.pages.any((BoostPage<dynamic> element) =>
               element.pageInfo.uniqueId == uniqueId));
+    } catch (e) {
+      Logger.logObject(e);
+    }
+    return null;
+  }
+
+  BoostPage? _findPageByUniqueId(String uniqueId, BoostContainer container) {
+    try {
+      return container.pages.singleWhere(
+          (BoostPage element) => element.pageInfo.uniqueId == uniqueId);
     } catch (e) {
       Logger.logObject(e);
     }

@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import Messages;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 
 public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterApi {
@@ -42,16 +41,36 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
     @Override
     public void pushNativeRoute(Messages.CommonParams params) {
         if (delegate != null) {
-            delegate.pushNativeRoute(params.getPageName(), params.getArguments());
+            delegate.pushNativeRoute(params.getPageName(), transToString(params.getArguments()));
         } else {
             throw new RuntimeException("FlutterBoostPlugin might *NOT* set delegate!");
         }
     }
 
+    HashMap<String, String> transToString(Map<Object, Object> originMap) {
+        HashMap<String, String> newMap = new HashMap();
+        for (Map.Entry<Object, Object> entry : originMap.entrySet()) {
+            if(entry.getKey() instanceof String){
+                newMap.put((String) entry.getKey(), entry.getValue().toString());
+            }
+        }
+        return newMap;
+    }
+
+
+    Map<Object, Object> transToObject(HashMap<String,String> originMap) {
+        Map<Object, Object> newMap = new HashMap();
+        for (Map.Entry<String, String> entry : originMap.entrySet()) {
+            newMap.put(entry.getKey(), entry.getValue());
+        }
+        return newMap;
+
+    }
+
     @Override
     public void pushFlutterRoute(Messages.CommonParams params) {
         if (delegate != null) {
-            delegate.pushFlutterRoute(params.getPageName(), params.getUniqueId(), params.getArguments());
+            delegate.pushFlutterRoute(params.getPageName(), params.getUniqueId(), transToString(params.getArguments()));
         } else {
             throw new RuntimeException("FlutterBoostPlugin might *NOT* set delegate!");
         }
@@ -64,7 +83,14 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
             ContainerShadowNode node = allContainers.get(uniqueId);
             if (node != null) {
                 if (node.container() != null) {
-                    node.container().finishContainer(params.getArguments());
+                    Map<Object, Object> originMap = params.getArguments();
+                    HashMap<String,Object> newMap = new HashMap();
+                    for (Map.Entry<Object, Object> entry : originMap.entrySet()) {
+                        if(entry.getKey() instanceof String){
+                            newMap.put((String) entry.getKey(), entry.getValue());
+                        }
+                    }
+                    node.container().finishContainer(newMap);
                 }
             }
         } else {
@@ -74,6 +100,11 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
 
     @Override
     public void enablePanGesture(Messages.PanGestureParams arg) {
+
+    }
+
+    @Override
+    public void popUtilRouter(Messages.CommonParams arg) {
 
     }
 
@@ -87,7 +118,7 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
             Messages.CommonParams params = new Messages.CommonParams();
             params.setUniqueId(uniqueId);
             params.setPageName(pageName);
-            params.setArguments(arguments);
+            params.setArguments(transToObject(arguments));
             channel.pushRoute(params, reply -> {
                 if (callback != null) {
                     callback.reply(null);

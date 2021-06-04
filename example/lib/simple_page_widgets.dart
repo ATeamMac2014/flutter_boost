@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boost_example/case/platform_view.dart';
 import 'package:flutter_boost/boost_navigator.dart';
+import 'package:flutter_boost/boost_container.dart';
 
 class FirstRouteWidget extends StatefulWidget {
   @override
@@ -171,18 +172,38 @@ class _FirstFirstRouteWidgetState extends State<FirstFirstRouteWidget> {
         title: Text('First Route'),
       ),
       body: Center(
-        child: RaisedButton(
-          child: Text('Open first route'),
-          onPressed: () {
-            print("open first page again!");
-            BoostNavigator.of().push("firstFirst", withContainer: false);
-            // FlutterBoost.singleton.open("first").then((Map value){
-            //   print("did receive first route result");
-            //   print("did receive first route result $value");
-            // });
-          },
-        ),
-      ),
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RaisedButton(
+            child: Text('Open first route'),
+            onPressed: () {
+              print("open first page again!");
+              BoostNavigator.of().push("firstFirst", withContainer: false);
+
+              // FlutterBoost.singleton.open("first").then((Map value){
+              //   print("did receive first route result");
+              //   print("did receive first route result $value");
+              // });
+            },
+          ),
+          RaisedButton(
+            child: Text('pop to flutterPage route'),
+            onPressed: () {
+              final id =
+                  BoostContainer.of(context)?.pages.first.pageInfo.uniqueId ??
+                      "";
+              print("BoostContainerid ${id}");
+              BoostNavigator.of().popUtil(id);
+
+              // FlutterBoost.singleton.open("first").then((Map value){
+              //   print("did receive first route result");
+              //   print("did receive first route result $value");
+              // });
+            },
+          ),
+        ],
+      )),
     );
   }
 }

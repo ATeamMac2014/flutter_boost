@@ -38,6 +38,8 @@
 
 - (void) popRoute:(NSString *)uniqueId ;
 
+- (void) popUtilRoute:(NSString *)uniqueId ;
+
 - (void) enablePanGesture:(NSString *)uniqueId enable:(BOOL) enable;
 
 @end

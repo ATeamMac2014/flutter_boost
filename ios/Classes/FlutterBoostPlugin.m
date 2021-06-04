@@ -94,6 +94,12 @@
     };
 }
 
+-(void)popUtilRouter:(FBCommonParams*)input error:(FlutterError *_Nullable *_Nonnull)error{
+    if([self.containerManager containUniqueId:input.uniqueId]){
+        [self.delegate  popUtilRoute:input.uniqueId];
+    };
+}
+
 @end
 
 

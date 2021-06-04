@@ -19,6 +19,7 @@ abstract class NativeRouterApi {
   void pushFlutterRoute(CommonParams param);
   void popRoute(CommonParams param);
   void enablePanGesture(PanGestureParams params);
+  void popUtilRouter(CommonParams param);
 }
 
 @FlutterApi()
