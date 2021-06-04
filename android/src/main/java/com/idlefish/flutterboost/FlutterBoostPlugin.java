@@ -41,36 +41,39 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
     @Override
     public void pushNativeRoute(Messages.CommonParams params) {
         if (delegate != null) {
-            delegate.pushNativeRoute(params.getPageName(), transToString(params.getArguments()));
+            delegate.pushNativeRoute(params.getPageName(), transferToString(params.getArguments()));
         } else {
             throw new RuntimeException("FlutterBoostPlugin might *NOT* set delegate!");
         }
     }
 
-    HashMap<String, String> transToString(Map<Object, Object> originMap) {
+    HashMap<String, String> transferToString(Map<Object, Object> other) {
         HashMap<String, String> newMap = new HashMap();
-        for (Map.Entry<Object, Object> entry : originMap.entrySet()) {
-            if(entry.getKey() instanceof String){
-                newMap.put((String) entry.getKey(), entry.getValue().toString());
+        if (other != null) {
+            for (Map.Entry<Object, Object> entry : other.entrySet()) {
+                newMap.put(entry.getKey().toString(), entry.getValue().toString());
             }
         }
+
         return newMap;
     }
 
 
-    Map<Object, Object> transToObject(HashMap<String,String> originMap) {
+    Map<Object, Object> transferToObject(HashMap<String,String> other) {
         Map<Object, Object> newMap = new HashMap();
-        for (Map.Entry<String, String> entry : originMap.entrySet()) {
-            newMap.put(entry.getKey(), entry.getValue());
+        if (other != null) {
+            for (Map.Entry<String, String> entry : other.entrySet()) {
+                newMap.put(entry.getKey(), entry.getValue());
+            }
         }
-        return newMap;
 
+        return newMap;
     }
 
     @Override
     public void pushFlutterRoute(Messages.CommonParams params) {
         if (delegate != null) {
-            delegate.pushFlutterRoute(params.getPageName(), params.getUniqueId(), transToString(params.getArguments()));
+            delegate.pushFlutterRoute(params.getPageName(), params.getUniqueId(), transferToString(params.getArguments()));
         } else {
             throw new RuntimeException("FlutterBoostPlugin might *NOT* set delegate!");
         }
@@ -118,7 +121,7 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
             Messages.CommonParams params = new Messages.CommonParams();
             params.setUniqueId(uniqueId);
             params.setPageName(pageName);
-            params.setArguments(transToObject(arguments));
+            params.setArguments(transferToObject(arguments));
             channel.pushRoute(params, reply -> {
                 if (callback != null) {
                     callback.reply(null);
