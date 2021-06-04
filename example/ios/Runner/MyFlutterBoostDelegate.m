@@ -61,11 +61,16 @@
 
 - (void)enablePanGesture:(NSString *)uniqueId enable:(BOOL)enable {
     NSLog(@"enable %d", enable);
-    printf("wqtest enablePanGesture ");
     [self.navigationController.interactivePopGestureRecognizer setEnabled:enable];
-//    self.navigationController?.interactivePopGestureRecognizer?.isEnabled = self.interactiveEnable
 }
 
+- (void)popUtilRoute:(NSString *)uniqueId {
+    for (FBFlutterViewContainer *vc in self.navigationController.viewControllers) {
+        if([vc isKindOfClass:FBFlutterViewContainer.class] && [vc.uniqueIDString isEqual: uniqueId]){
+            [self.navigationController popToViewController:vc animated:true];
+        }
+    }
+}
 
 @end
 

@@ -224,4 +224,21 @@ void FBNativeRouterApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FBNat
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.NativeRouterApi.popUtilRouter"
+        binaryMessenger:binaryMessenger];
+    if (api) {
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        FBCommonParams *input = [FBCommonParams fromMap:message];
+        FlutterError *error;
+        [api popUtilRouter:input error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }

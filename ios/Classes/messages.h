@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)pushFlutterRoute:(FBCommonParams*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)popRoute:(FBCommonParams*)input error:(FlutterError *_Nullable *_Nonnull)error;
 -(void)enablePanGesture:(FBPanGestureParams*)input error:(FlutterError *_Nullable *_Nonnull)error;
+-(void)popUtilRouter:(FBCommonParams*)input error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FBNativeRouterApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FBNativeRouterApi> _Nullable api);
