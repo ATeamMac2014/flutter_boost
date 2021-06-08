@@ -31,6 +31,7 @@
 @interface FlutterBoostPlugin : NSObject <FlutterPlugin>
 @property (nonatomic, strong) id<FlutterBoostDelegate> delegate;
 @property(nonatomic, strong) FBFlutterRouterApi* flutterApi;
+- (NSString *)getPeak;
 - (void)addContainer:(id<FBFlutterContainer>)vc;
 - (void)removeContainer:(id<FBFlutterContainer>)vc;
 + (FlutterBoostPlugin* )getPlugin:(FlutterEngine*)engine ;

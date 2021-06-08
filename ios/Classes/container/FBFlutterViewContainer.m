@@ -302,8 +302,16 @@ static NSUInteger kInstanceCounter = 0;
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-  
     [super bridge_viewDidDisappear:animated];
+    if ([[FB_PLUGIN getPeak] isEqualToString:self.uniqueID]) {
+        FBCommonParams* params =[[FBCommonParams alloc] init ];
+        params.pageName = _name;
+        params.arguments = _params;
+        params.uniqueId = self.uniqueID;
+        [FB_PLUGIN.flutterApi onNativeViewShow: params completion:^(NSError * e) {
+               
+                }];
+    }
 }
 
 - (void)installSplashScreenViewIfNecessary {
