@@ -59,7 +59,7 @@ class BoostContainer extends StatefulWidget {
     navigator?.pop();
   }
 
-  void popUtil(String pageName) {
+  void popUntil(String pageName) {
     navigator?.popUntil((route) {
       return route.settings.name == pageName;
     });

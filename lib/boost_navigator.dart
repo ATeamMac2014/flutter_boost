@@ -56,12 +56,12 @@ class BoostNavigator {
   }
 
   /// Pop the top-most page off the hybrid stack.
-  void pop<T extends Object>([T? result]) {
-    appState.popWithResult(result);
+  Future<void> pop<T extends Object>([T? result]) async {
+    return appState.popWithResult(result);
   }
 
-  void popUtil<T extends Object>(String uniqueId, [T? result]) {
-    appState.popUtilWithResult(uniqueId, result);
+  Future<void> popUtil<T extends Object>(String uniqueId, [T? result]) async {
+    await appState.popUntil(uniqueId);
   }
 
   /// Remove the page with the given [uniqueId] from hybrid stack.

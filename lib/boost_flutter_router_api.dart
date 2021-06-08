@@ -3,6 +3,7 @@ import 'package:flutter_boost/messages.dart';
 
 /// The MessageChannel counterpart on the Dart side.
 class BoostFlutterRouterApi extends FlutterRouterApi {
+  
   factory BoostFlutterRouterApi(FlutterBoostAppState appState) {
     BoostFlutterRouterApi? instance = _instance;
     if (instance == null) {
@@ -55,8 +56,6 @@ class BoostFlutterRouterApi extends FlutterRouterApi {
 
   @override
   void removeRoute(CommonParams arg) {
-    if (arg.uniqueId != null) {
-      appState.remove(arg.uniqueId!);
-    }
+    appState.removeRouter(arg.uniqueId);
   }
 }
