@@ -40,6 +40,9 @@
     [self.containerManager addUnique:vc];
     
 }
+- (NSString *)getPeak {
+    return self.containerManager.peak;
+}
 
 - (void)removeContainer:(id<FBFlutterContainer>)vc{
     [self.containerManager remove:vc];
