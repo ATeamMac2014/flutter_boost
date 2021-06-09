@@ -309,12 +309,18 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         .dispatchBackgroundEvent(_getCurrentPageRoute());
   }
 
-  void onNativeViewShow() {
+  void onNativeViewShow({CommonParams? arg}) {
+    final String? uniqueId = arg?.uniqueId;
+    if (uniqueId != null) {
+      if (topContainer.pageInfo.uniqueId != uniqueId) {
+        return;
+      }
+    }
     PageVisibilityBinding.instance
         .dispatchPageHideEvent(_getCurrentPageRoute());
   }
 
-  void onNativeViewHide() {
+  void onNativeViewHide({CommonParams? arg}) {
     PageVisibilityBinding.instance
         .dispatchPageShowEvent(_getCurrentPageRoute());
   }
