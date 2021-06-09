@@ -185,7 +185,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         private TransparencyMode transparencyMode = TransparencyMode.transparent;
         private boolean shouldAttachEngineToActivity = true;
         private String url = "/";
-        private HashMap<String, String> params;
+        private HashMap<String, Object> params;
         private String uniqueId;
 
         public CachedEngineFragmentBuilder( String engineId) {
@@ -203,7 +203,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
             return this;
         }
 
-        public FlutterBoostFragment.CachedEngineFragmentBuilder urlParams(HashMap<String, String> params) {
+        public FlutterBoostFragment.CachedEngineFragmentBuilder urlParams(HashMap<String, Object> params) {
             this.params = params;
             return this;
         }
