@@ -168,8 +168,8 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     }
 
     @Override
-    public HashMap<String, String> getUrlParams() {
-        return (HashMap<String, String>)getArguments().getSerializable(EXTRA_URL_PARAM);
+    public HashMap<String, Object> getUrlParams() {
+        return (HashMap<String, Object>)getArguments().getSerializable(EXTRA_URL_PARAM);
     }
 
     @Override

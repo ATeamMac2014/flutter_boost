@@ -41,39 +41,16 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
     @Override
     public void pushNativeRoute(Messages.CommonParams params) {
         if (delegate != null) {
-            delegate.pushNativeRoute(params.getPageName(), transferToString(params.getArguments()));
+            delegate.pushNativeRoute(params.getPageName(), params.getArguments());
         } else {
             throw new RuntimeException("FlutterBoostPlugin might *NOT* set delegate!");
         }
     }
 
-    HashMap<String, String> transferToString(Map<Object, Object> other) {
-        HashMap<String, String> newMap = new HashMap();
-        if (other != null) {
-            for (Map.Entry<Object, Object> entry : other.entrySet()) {
-                newMap.put(entry.getKey().toString(), entry.getValue().toString());
-            }
-        }
-
-        return newMap;
-    }
-
-
-    Map<Object, Object> transferToObject(HashMap<String,String> other) {
-        Map<Object, Object> newMap = new HashMap();
-        if (other != null) {
-            for (Map.Entry<String, String> entry : other.entrySet()) {
-                newMap.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        return newMap;
-    }
-
     @Override
     public void pushFlutterRoute(Messages.CommonParams params) {
         if (delegate != null) {
-            delegate.pushFlutterRoute(params.getPageName(), params.getUniqueId(), transferToString(params.getArguments()));
+            delegate.pushFlutterRoute(params.getPageName(), params.getUniqueId(),  params.getArguments());
         } else {
             throw new RuntimeException("FlutterBoostPlugin might *NOT* set delegate!");
         }
@@ -86,14 +63,7 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
             ContainerShadowNode node = allContainers.get(uniqueId);
             if (node != null) {
                 if (node.container() != null) {
-                    Map<Object, Object> originMap = params.getArguments();
-                    HashMap<String,Object> newMap = new HashMap();
-                    for (Map.Entry<Object, Object> entry : originMap.entrySet()) {
-                        if(entry.getKey() instanceof String){
-                            newMap.put((String) entry.getKey(), entry.getValue());
-                        }
-                    }
-                    node.container().finishContainer(newMap);
+                    node.container().finishContainer(params.getArguments());
                 }
             }
         } else {
@@ -115,13 +85,13 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
         void reply(T reply);
     }
 
-    public void pushRoute(String uniqueId, String pageName, HashMap<String, String> arguments,
+    public void pushRoute(String uniqueId, String pageName, HashMap<String, Object> arguments,
                           final Reply<Void> callback) {
         if (channel != null) {
             Messages.CommonParams params = new Messages.CommonParams();
             params.setUniqueId(uniqueId);
             params.setPageName(pageName);
-            params.setArguments(transferToObject(arguments));
+            params.setArguments(arguments);
             channel.pushRoute(params, reply -> {
                 if (callback != null) {
                     callback.reply(null);
@@ -300,7 +270,7 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
             return null;
         }
 
-        public HashMap<String, String> getUrlParams() {
+        public HashMap<String, Object> getUrlParams() {
             if (container() != null) {
                 return container().getUrlParams();
             }

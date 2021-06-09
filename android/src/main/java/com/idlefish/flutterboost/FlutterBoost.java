@@ -123,7 +123,7 @@ public class FlutterBoost {
      * @param name The Flutter route name.
      * @param arguments The bussiness arguments.
      */
-    public void open(String name, HashMap<String, String> arguments) {
+    public void open(String name, HashMap<String, Object> arguments) {
         this.getPlugin().getDelegate().pushFlutterRoute(name, null, arguments);
     }
 

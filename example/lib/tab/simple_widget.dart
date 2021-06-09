@@ -120,7 +120,7 @@ class _SimpleWidgetState extends State<SimpleWidget>
                     )),
                 onTap: () => BoostNavigator.of().push("flutterPage",
                     withContainer: true,
-                    arguments: <String, String>{'from': widget.uniqueId}),
+                    arguments: <String, Object>{'from': widget.uniqueId, 'index': 100}),
               ),
               InkWell(
                 child: Container(

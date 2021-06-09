@@ -24,9 +24,9 @@ public class Messages {
     public String getUniqueId() { return uniqueId; }
     public void setUniqueId(String setterArg) { this.uniqueId = setterArg; }
 
-    private Map<Object, Object> arguments;
-    public Map<Object, Object> getArguments() { return arguments; }
-    public void setArguments(Map<Object, Object> setterArg) { this.arguments = setterArg; }
+    private HashMap<String, Object> arguments;
+    public HashMap<String, Object> getArguments() { return arguments; }
+    public void setArguments(HashMap<String, Object> setterArg) { this.arguments = setterArg; }
 
     Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
@@ -41,8 +41,18 @@ public class Messages {
       fromMapResult.pageName = (String)pageName;
       Object uniqueId = map.get("uniqueId");
       fromMapResult.uniqueId = (String)uniqueId;
-      Object arguments = map.get("arguments");
-      fromMapResult.arguments = (Map<Object, Object>)arguments;
+
+      if (map.get("arguments") instanceof Map) {
+        Map<Object, Object> arguments = (Map<Object, Object>)map.get("arguments");
+        HashMap<String, Object> newArguments = new HashMap();
+        if (arguments != null) {
+          for (Map.Entry<Object, Object> entry : arguments.entrySet()) {
+            newArguments.put(entry.getKey().toString(), entry.getValue());
+          }
+        }
+
+        fromMapResult.arguments = newArguments;
+      }
       return fromMapResult;
     }
   }

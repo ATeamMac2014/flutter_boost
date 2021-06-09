@@ -12,7 +12,7 @@ import java.util.Map;
 public interface FlutterViewContainer {
     Activity getContextActivity();
     String getUrl();
-    HashMap<String, String> getUrlParams();
+    HashMap<String, Object> getUrlParams();
     String getUniqueId();
     void finishContainer(Map<String, Object> result);
 }
