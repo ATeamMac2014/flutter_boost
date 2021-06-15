@@ -98,7 +98,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     @Override
     public void onResume() {
         if (flutterView == null) {
-            findFlutterView(this.getView().getRootView());
+            findFlutterView(this.getView());
         }
         super.onResume();
         if (!ismCurrentHidden()) {

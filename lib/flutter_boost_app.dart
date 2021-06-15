@@ -155,15 +155,15 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       Map<dynamic, dynamic>? arguments,
       bool withContainer = true}) {
     _cancelActivePointers();
-    final BoostContainer? containner = _findContainerByUniqueId(uniqueId);
-    if (containner != null) {
-      if (topContainer != containner) {
+    final BoostContainer? container = _findContainerByUniqueId(uniqueId);
+    if (container != null) {
+      if (topContainer != container) {
         PageVisibilityBinding.instance
             .dispatchPageHideEvent(_getCurrentPageRoute());
-        containers.remove(containner);
-        containner.detach();
-        containers.add(containner);
-        insertEntry(containner);
+        containers.remove(container);
+        container.detach();
+        containers.add(container);
+        insertEntry(container);
       } else {
         PageVisibilityBinding.instance
             .dispatchPageShowEvent(_getCurrentPageRoute());
@@ -187,7 +187,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       }
     }
     Logger.log(
-        'push page, uniqueId=$uniqueId, existed=$containner, withContainer=$withContainer, arguments:$arguments, $containers');
+        'push page, uniqueId=$uniqueId, existed=$container, withContainer=$withContainer, arguments:$arguments, $containers');
   }
 
   Future<void> popWithResult<T extends Object>(T? result) async {
@@ -274,11 +274,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       ..uniqueId = container.pageInfo.uniqueId
       ..arguments = container.pageInfo.arguments;
     await _nativeRouterApi.popRoute(params);
-
-
-    if (Platform.isAndroid) {
-      detachContainner(container);
-    }
   }
 
   void onForeground() {
@@ -309,10 +304,16 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   
   void removeRouter(String? uniqueId) {
     if (uniqueId != null) {
-      final BoostContainer? container = _findPendingPopContainerByUniqueId(uniqueId);
-      if (container != null) {
-        detachContainner(container);
-      }
+      _removeContainer(uniqueId, targetContainers: _pendingPopcontainers);
+      _removeContainer(uniqueId, targetContainers: _containers);
+    }
+  }
+
+  void _removeContainer(String uniqueId, {required List<BoostContainer> targetContainers}) {
+    BoostContainer? container = _findContainer(targetContainers, uniqueId);
+    if (container != null) {
+      targetContainers.remove(container);
+      detachContainer(container);
     }
   }
 
@@ -357,13 +358,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     return _findContainer(_containers, uniqueId);
   }
 
-  BoostContainer? _findPendingPopContainerByUniqueId(String uniqueId) {
-    return _findContainer(_pendingPopcontainers, uniqueId);
-  }
-
-  BoostContainer? _findContainer(List<BoostContainer> containners, String uniqueId) {
+  BoostContainer? _findContainer(List<BoostContainer> containers, String uniqueId) {
     try {
-      return containners.singleWhere((BoostContainer element) =>
+      return containers.singleWhere((BoostContainer element) =>
       (element.pageInfo.uniqueId == uniqueId) ||
           element.pages.any((BoostPage<dynamic> element) =>
           element.pageInfo.uniqueId == uniqueId));
@@ -383,10 +380,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     return null;
   }
 
-  void detachContainner(BoostContainer container) {
+  void detachContainer(BoostContainer container) {
       Route<dynamic>? route = container.pages.first.route;
       PageVisibilityBinding.instance.dispatchPageDestoryEvent(route);
-      _pendingPopcontainers.remove(container);
       container.detach();
   }
 
