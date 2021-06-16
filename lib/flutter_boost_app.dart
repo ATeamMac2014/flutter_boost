@@ -274,6 +274,10 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       ..uniqueId = container.pageInfo.uniqueId
       ..arguments = container.pageInfo.arguments;
     await _nativeRouterApi.popRoute(params);
+
+    if (Platform.isAndroid) {
+      _removeContainer(container.pageInfo.uniqueId, targetContainers: _pendingPopcontainers);
+    }
   }
 
   void onForeground() {
