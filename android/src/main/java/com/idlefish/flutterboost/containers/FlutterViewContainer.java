@@ -2,6 +2,8 @@ package com.idlefish.flutterboost.containers;
 
 import android.app.Activity;
 
+import com.idlefish.flutterboost.Messages;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,5 +16,5 @@ public interface FlutterViewContainer {
     String getUrl();
     HashMap<String, Object> getUrlParams();
     String getUniqueId();
-    void finishContainer(Map<String, Object> result);
+    void finishContainer(Map<String, Object> result, Messages.RouterResult<Void> callback);
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.idlefish.flutterboost.FlutterBoost;
 import com.idlefish.flutterboost.FlutterBoostPlugin;
+import com.idlefish.flutterboost.Messages;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -158,8 +159,9 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     }
 
     @Override
-    public void finishContainer(Map<String, Object> result) {
+    public void finishContainer(Map<String, Object> result, Messages.RouterResult<Void> callback) {
         this.getActivity().finish();
+        callback.result(null);
     }
 
     @Override

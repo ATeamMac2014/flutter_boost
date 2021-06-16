@@ -57,13 +57,13 @@ public class FlutterBoostPlugin implements FlutterPlugin, Messages.NativeRouterA
     }
 
     @Override
-    public void popRoute(Messages.CommonParams params) {
+    public void popRoute(Messages.CommonParams params, Messages.RouterResult<Void> result) {
         String uniqueId = params.getUniqueId();
         if (uniqueId != null) {
             ContainerShadowNode node = allContainers.get(uniqueId);
             if (node != null) {
                 if (node.container() != null) {
-                    node.container().finishContainer(params.getArguments());
+                    node.container().finishContainer(params.getArguments(),result);
                 }
             }
         } else {

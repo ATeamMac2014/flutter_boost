@@ -3,6 +3,8 @@
 package com.idlefish.flutterboost;
 
 
+import androidx.annotation.Nullable;
+
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
@@ -150,11 +152,15 @@ public class Messages {
     }
   }
 
+  public interface RouterResult<T> {
+    void result(@Nullable T result);
+  }
+
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface NativeRouterApi {
     void pushNativeRoute(CommonParams arg);
     void pushFlutterRoute(CommonParams arg);
-    void popRoute(CommonParams arg);
+    void popRoute(CommonParams arg, RouterResult<Void> result);
     void enablePanGesture(PanGestureParams arg);
     void popUtilRouter(CommonParams arg);
 
@@ -211,13 +217,16 @@ public class Messages {
             try {
               @SuppressWarnings("ConstantConditions")
               CommonParams input = CommonParams.fromMap((Map<String, Object>)message);
-              api.popRoute(input);
-              wrapped.put("result", null);
+              api.popRoute(input, result -> {
+                wrapped.put("result", null);
+                reply.reply(wrapped);
+              });
+
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
             }
-            reply.reply(wrapped);
           });
         } else {
           channel.setMessageHandler(null);

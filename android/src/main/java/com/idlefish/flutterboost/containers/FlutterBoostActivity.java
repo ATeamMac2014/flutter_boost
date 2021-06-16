@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.idlefish.flutterboost.FlutterBoost;
 import com.idlefish.flutterboost.FlutterBoostPlugin;
+import com.idlefish.flutterboost.Messages;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.
 public class FlutterBoostActivity extends FlutterActivity implements FlutterViewContainer {
     private FlutterView flutterView;
     private FlutterViewContainerObserver observer;
+    private Messages.RouterResult<Void> callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,9 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
         super.onPause();
         ActivityAndFragmentPatch.onPauseDetachFromFlutterEngine(flutterView, getFlutterEngine());
         getFlutterEngine().getLifecycleChannel().appIsResumed();
+        if (callback != null) {
+            callback.result(null);
+        }
     }
 
     @Override
@@ -114,7 +119,8 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
     }
 
     @Override
-    public void finishContainer(Map<String, Object> result) {
+    public void finishContainer(Map<String, Object> result, Messages.RouterResult<Void> callback) {
+        this.callback = callback;
         finish();
     }
 

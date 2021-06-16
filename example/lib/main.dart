@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
   };
 
   Route<dynamic> routeFactory(RouteSettings settings, String uniqueId) {
-    return MaterialPageRoute(
+    return MaterialPageRoute<dynamic>(
         settings: settings,
         builder: (context) {
           final PageBuilder? func = routerMap[settings.name];

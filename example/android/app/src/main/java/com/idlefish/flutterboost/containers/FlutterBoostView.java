@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.idlefish.flutterboost.FlutterBoost;
 import com.idlefish.flutterboost.FlutterBoostPlugin;
+import com.idlefish.flutterboost.Messages;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -188,11 +189,15 @@ public class FlutterBoostView extends LifecycleView implements FlutterViewContai
     }
 
     @Override
-    public void finishContainer(Map<String, Object> result) {
+    public void finishContainer(Map<String, Object> result, Messages.RouterResult<Void> callback) {
         if (mCallback != null) {
             mCallback.finishContainer(result);
         } else {
             getActivity().finish();
+        }
+
+        if (callback != null) {
+            callback.result(null);
         }
     }
 
