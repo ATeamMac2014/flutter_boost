@@ -132,7 +132,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
 
   Future<T> pushWithResult<T extends Object>(String pageName,
       {Map<Object, Object>? arguments, bool withContainer = true}) {
-
     String uniqueId = _createUniqueId(pageName);
     if (withContainer) {
       final CommonParams params = CommonParams()
@@ -164,6 +163,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         container.detach();
         containers.add(container);
         insertEntry(container);
+        PageVisibilityBinding.instance
+            .dispatchPageShowEvent(container.topPage.route);
       } else {
         PageVisibilityBinding.instance
             .dispatchPageShowEvent(_getCurrentPageRoute());
@@ -194,14 +195,15 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     final String uniqueId = topContainer.topPage.pageInfo.uniqueId;
     final result = await pop(uniqueId: uniqueId);
     if (result == true) {
-       if (_pendingResult.containsKey(uniqueId)) {
-         _pendingResult[uniqueId]?.complete(result);
-         _pendingResult.remove(uniqueId);
-       }
-     }
+      if (_pendingResult.containsKey(uniqueId)) {
+        _pendingResult[uniqueId]?.complete(result);
+        _pendingResult.remove(uniqueId);
+      }
+    }
   }
 
-  Future<bool> popUntil(String uniqueId, {Map<dynamic, dynamic>? arguments}) async {
+  Future<bool> popUntil(String uniqueId,
+      {Map<dynamic, dynamic>? arguments}) async {
     final BoostContainer? container = _findContainerByUniqueId(uniqueId);
     if (container == null) {
       Logger.error('uniqueId=$uniqueId not find');
@@ -234,7 +236,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         Logger.error('uniqueId=$uniqueId not find');
         return false;
       }
-
     } else {
       container = topContainer;
     }
@@ -276,7 +277,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     await _nativeRouterApi.popRoute(params);
 
     if (Platform.isAndroid) {
-      _removeContainer(container.pageInfo.uniqueId, targetContainers: _pendingPopcontainers);
+      _removeContainer(container.pageInfo.uniqueId,
+          targetContainers: _pendingPopcontainers);
     }
   }
 
@@ -305,7 +307,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     PageVisibilityBinding.instance
         .dispatchPageShowEvent(_getCurrentPageRoute());
   }
-  
+
   void removeRouter(String? uniqueId) {
     if (uniqueId != null) {
       _removeContainer(uniqueId, targetContainers: _pendingPopcontainers);
@@ -313,7 +315,8 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     }
   }
 
-  void _removeContainer(String uniqueId, {required List<BoostContainer> targetContainers}) {
+  void _removeContainer(String uniqueId,
+      {required List<BoostContainer> targetContainers}) {
     BoostContainer? container = _findContainer(targetContainers, uniqueId);
     if (container != null) {
       targetContainers.remove(container);
@@ -362,12 +365,13 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     return _findContainer(_containers, uniqueId);
   }
 
-  BoostContainer? _findContainer(List<BoostContainer> containers, String uniqueId) {
+  BoostContainer? _findContainer(
+      List<BoostContainer> containers, String uniqueId) {
     try {
       return containers.singleWhere((BoostContainer element) =>
-      (element.pageInfo.uniqueId == uniqueId) ||
+          (element.pageInfo.uniqueId == uniqueId) ||
           element.pages.any((BoostPage<dynamic> element) =>
-          element.pageInfo.uniqueId == uniqueId));
+              element.pageInfo.uniqueId == uniqueId));
     } catch (e) {
       Logger.logObject(e);
     }
@@ -385,9 +389,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   }
 
   void detachContainer(BoostContainer container) {
-      Route<dynamic>? route = container.pages.first.route;
-      PageVisibilityBinding.instance.dispatchPageDestoryEvent(route);
-      container.detach();
+    Route<dynamic>? route = container.pages.first.route;
+    PageVisibilityBinding.instance.dispatchPageDestoryEvent(route);
+    container.detach();
   }
 
   PageInfo getTopPageInfo() {
