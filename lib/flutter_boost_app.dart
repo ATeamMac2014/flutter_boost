@@ -240,10 +240,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
       container = topContainer;
     }
 
-    if (container != topContainer) {
-      return false;
-    }
-
     if (container.pages.length > 1) {
       container.pop();
     } else {
@@ -268,8 +264,9 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
   void _notifyNativePop(BoostContainer container) async {
     Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.uniqueId}');
     _containers.remove(container);
-    _pendingPopcontainers.add(container);
-
+    if (!_pendingPopcontainers.contains(container)) {
+      _pendingPopcontainers.add(container);
+    }
     final CommonParams params = CommonParams()
       ..pageName = container.pageInfo.pageName
       ..uniqueId = container.pageInfo.uniqueId
