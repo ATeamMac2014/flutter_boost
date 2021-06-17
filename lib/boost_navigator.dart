@@ -4,13 +4,14 @@ import 'package:flutter_boost/messages.dart';
 import 'package:flutter_boost/overlay_entry.dart';
 
 import 'boost_container.dart';
+import 'logger.dart';
 
 /// A object that manages a set of pages with a hybrid stack.
 ///
 class BoostNavigator {
-  const BoostNavigator(this.appState);
+  const BoostNavigator(this._appState);
 
-  final FlutterBoostAppState appState;
+  final FlutterBoostAppState _appState;
 
   /// Retrieves the instance of [BoostNavigator]
   static BoostNavigator of() {
@@ -28,47 +29,62 @@ class BoostNavigator {
     }
   }
 
+  String? getUniqueIdFromName(String pageName) {
+    try {
+      return _appState.containers
+          .firstWhere((element) =>
+              element.pageInfo.pageName == pageName ||
+              element.pages
+                  .any((element) => element.pageInfo.pageName == pageName))
+          .pageInfo
+          .uniqueId;
+    } catch (e) {
+      Logger.logObject(e);
+    }
+    return null;
+  }
+
   /// Whether this page with the given [name] is a flutter page
   ///
   /// If the name of route can be found in route table then return true,
   /// otherwise return false.
   bool isFlutterPage(String name) {
-    return appState.routeFactory(RouteSettings(name: name), "") != null;
+    return _appState.routeFactory(RouteSettings(name: name), "") != null;
   }
 
   /// Push the page with the given [name] onto the hybrid stack.
   Future<T?> push<T extends Object>(String name,
       {Map<Object, Object>? arguments, bool withContainer = true}) {
     if (isFlutterPage(name)) {
-      return appState.pushWithResult(name,
+      return _appState.pushWithResult(name,
           arguments: arguments, withContainer: withContainer);
     } else {
       final CommonParams params = CommonParams()
         ..pageName = name
         ..arguments = arguments;
-      appState.nativeRouterApi.pushNativeRoute(params);
+      _appState.nativeRouterApi.pushNativeRoute(params);
       return Future<T?>(() => null);
     }
   }
 
   void enablePanGesture(String uniqueId, bool enable) {
-    return appState.enablePanGesture(uniqueId, enable);
+    return _appState.enablePanGesture(uniqueId, enable);
   }
 
   /// Pop the top-most page off the hybrid stack.
   Future<void> pop<T extends Object>([T? result]) async {
-    return appState.popWithResult(result);
+    return _appState.popWithResult(result);
   }
 
   Future<void> popUtil<T extends Object>(String uniqueId, [T? result]) async {
-    await appState.popUntil(uniqueId);
+    await _appState.popUntil(uniqueId);
   }
 
   /// Remove the page with the given [uniqueId] from hybrid stack.
   ///
   /// This API is for backwards compatibility.
   void remove(String uniqueId) {
-    appState.pop(uniqueId: uniqueId);
+    _appState.pop(uniqueId: uniqueId);
   }
 
   /// Retrieves the infomation of the top-most flutter page
@@ -76,7 +92,7 @@ class BoostNavigator {
   ///
   /// This is a legacy API for backwards compatibility.
   PageInfo getTopPageInfo() {
-    return appState.getTopPageInfo();
+    return _appState.getTopPageInfo();
   }
 
   PageInfo? getTopByContext(BuildContext context) {
@@ -87,7 +103,7 @@ class BoostNavigator {
   ///
   /// This is a legacy API for backwards compatibility.
   int pageSize() {
-    return appState.pageSize();
+    return _appState.pageSize();
   }
 }
 
