@@ -193,7 +193,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
 
   Future<void> popWithResult<T extends Object>(T? result) async {
     final String uniqueId = topContainer.topPage.pageInfo.uniqueId;
-    final result = await pop(uniqueId: uniqueId);
+    final result = pop(uniqueId: uniqueId);
     if (result == true) {
       if (_pendingResult.containsKey(uniqueId)) {
         _pendingResult[uniqueId]?.complete(result);
@@ -228,7 +228,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     return true;
   }
 
-  Future<bool> pop({String? uniqueId, Map<dynamic, dynamic>? arguments}) async {
+  bool pop({String? uniqueId, Map<dynamic, dynamic>? arguments}) {
     BoostContainer? container;
     if (uniqueId != null) {
       container = _findContainerByUniqueId(uniqueId);
@@ -243,14 +243,10 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     if (container != topContainer) {
       return false;
     }
-
     if (container.pages.length > 1) {
       container.pop();
     } else {
-      final bool? handled = await container.navigator?.maybePop();
-      if (handled != null && !handled) {
-        _notifyNativePop(container);
-      }
+      _notifyNativePop(container);
     }
 
     Logger.log(
@@ -269,7 +265,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     Logger.log('_removeContainer ,  uniqueId=${container.pageInfo.uniqueId}');
     _containers.remove(container);
     _pendingPopcontainers.add(container);
-
     final CommonParams params = CommonParams()
       ..pageName = container.pageInfo.pageName
       ..uniqueId = container.pageInfo.uniqueId
