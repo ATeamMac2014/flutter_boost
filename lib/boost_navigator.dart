@@ -67,6 +67,16 @@ class BoostNavigator {
     }
   }
 
+  Future<T> pushWithResult<T extends Object>(String pageName,
+      {Map<Object, Object>? arguments, bool withContainer = true}) {
+    return _appState.pushWithResult(pageName,
+        arguments: arguments, withContainer: withContainer);
+  }
+
+  Future<void> pushNativeRoute(CommonParams arg) {
+    return _appState.nativeRouterApi.pushNativeRoute(arg);
+  }
+
   void enablePanGesture(String uniqueId, bool enable) {
     return _appState.enablePanGesture(uniqueId, enable);
   }
