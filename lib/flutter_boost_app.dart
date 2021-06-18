@@ -59,9 +59,6 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
 
   @override
   void initState() {
-    final pageName = widget.initialRoute;
-    _containers.add(_createContainer(
-        PageInfo(pageName: pageName, uniqueId: _createUniqueId(pageName))));
     _nativeRouterApi = NativeRouterApi();
     _boostFlutterRouterApi = BoostFlutterRouterApi(this);
     super.initState();
