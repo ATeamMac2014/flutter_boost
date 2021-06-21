@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_boost/boost_navigator.dart';
 import 'package:flutter_boost/flutter_boost_app.dart';
 import 'overlay_entry.dart';
+import 'package:flutter/scheduler.dart';
 
 class BoostContainer extends StatefulWidget {
   BoostContainer(
@@ -39,6 +40,17 @@ class BoostContainer extends StatefulWidget {
     }
 
     _owner = null;
+
+    // Ensure this frame is refreshed after schedule frame，otherwise the PageState.dispose may not be called
+    final instance = SchedulerBinding.instance;
+    if (instance != null) {
+      final bool hasScheduledFrame = instance.hasScheduledFrame;
+      final bool framesEnabled = instance.framesEnabled;
+
+      if (hasScheduledFrame || !framesEnabled) {
+        instance.scheduleWarmUpFrame();
+      }
+    }
   }
 
   void attach(ContainerOverlayEntry entry) {
