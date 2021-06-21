@@ -141,6 +141,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     public void onDestroyView() {
         super.onDestroyView();
         observer.onDestroyView();
+        flutterView = null;
     }
 
     @Override
