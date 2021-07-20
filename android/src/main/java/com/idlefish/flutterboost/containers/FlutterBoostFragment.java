@@ -24,6 +24,7 @@ import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.EXTRA_URL;
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.EXTRA_URL_PARAM;
 
+
 public class FlutterBoostFragment extends FlutterFragment implements FlutterViewContainer {
     private FlutterView flutterView;
     private FlutterViewContainerObserver observer;
@@ -63,14 +64,18 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         observer.onCreateView();
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        findFlutterView(view);
+        return view;
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (hidden) {
             observer.onDisappear(InitiatorLocation.SwitchTabs);
-            ActivityAndFragmentPatch.onPauseDetachFromFlutterEngine(flutterView, this.getFlutterEngine());
+            if (flutterView != null) {
+                ActivityAndFragmentPatch.onPauseDetachFromFlutterEngine(flutterView, this.getFlutterEngine());
+            }
         } else {
             observer.onAppear(InitiatorLocation.SwitchTabs);
             ActivityAndFragmentPatch.onResumeAttachToFlutterEngine(flutterView, this.getFlutterEngine(), this);
